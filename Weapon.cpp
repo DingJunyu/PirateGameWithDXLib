@@ -41,5 +41,5 @@ bool Ammo::Move() {
 }
 
 bool Ammo::Hit() {
-
+	return true;
 }
