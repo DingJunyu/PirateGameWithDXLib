@@ -41,5 +41,9 @@ private:
 	double Radian;//ラジアン//射撃の方向はRa+1/2pi and Ra+3/2pi
 	double Speed;//速度
 	int Gears;//GEAR_に参考してください
-	double GearsToSpeed;
+	double GearsToSpeed;//ギアと速度の関係
+	double Length;
+	double Width;
+
+
 };

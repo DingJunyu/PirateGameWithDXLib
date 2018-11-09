@@ -28,6 +28,7 @@ void ShipUniversal::Move(int **map) {
 	}
 }
 
+/*スピード変更*/
 void ShipUniversal::ChangeGear(int Gear) {
 	if (Gear < 0 || Gear>6)
 		return;
@@ -41,4 +42,3 @@ void ShipUniversal::ChangeGear(int Gear) {
 	case GEAR_::BACK_UP:GearsToSpeed = -0.25; break;
 	};
 }
-

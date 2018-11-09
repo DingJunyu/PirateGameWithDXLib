@@ -37,4 +37,9 @@ bool Ammo::Move() {
 	/*—LŒø”ÍˆÍ‚É’´‚¦‚½‚ç*/
 	if (GetNowCount() > ShootTime + MaxFlyTime)
 		return true;
+	return false;
+}
+
+bool Ammo::Hit() {
+
 }

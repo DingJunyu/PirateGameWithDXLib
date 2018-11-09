@@ -10,7 +10,7 @@ public:
 
 	/*trueを返せば、メイン関数のリストから削除*/
 	bool Move();//最大飛行時間に超えた/マップの辺を越えた時はtrueを返す
-	bool Hit(int **map);//命中の時はtrueを返す
+	bool Hit();//命中の時はtrueを返す
 
 private:
 	const int Speed;
@@ -36,6 +36,5 @@ private:
 	const int Range;//攻撃距離//飛行時間に変更//ms単位
 	const int CoolDown;//射撃間隔
 	const int Type;//武器の識別番号
-	double LastUsed;//前回使った時間を記録
+	int LastUsed;//前回使った時間を記録
 };
-
