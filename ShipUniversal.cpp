@@ -4,27 +4,35 @@ ShipUniversal::~ShipUniversal()
 {
 }
 
-void ShipUniversal::Move(int **map) {
+void ShipUniversal::Move() {
 	/*X軸の移動や境界チェック*/
-	CoordX += sin(Radian)*Speed*GearsToSpeed;
+	double TimeDifference;
+	int NewTime = GetNowCount();
+	TimeDifference = (double)(NewTime - LastMovedTime)/10;
+	LastMovedTime = NewTime;
+	CoordX += ShipSin*Speed*GearsToSpeed*TimeDifference;
 	if (CoordX > BOARDER_X) {
 		CoordX = BOARDER_X;
 		Radian = 0 - Radian;
+		GetNewCosSin();
 	}
 	if (CoordX < 0) {
 		CoordX = 0;
 		Radian = 0 - Radian;
+		GetNewCosSin();
 	}
 
 	/*Y軸の移動や境界チェック*/
-	CoordY += sin(Radian)*Speed*GearsToSpeed;
+	CoordY -= ShipCos*Speed*GearsToSpeed*TimeDifference;
 	if (CoordY > BOARDER_Y) {
 		CoordY = BOARDER_Y;
 		Radian = PI - Radian;
+		GetNewCosSin();
 	}
 	if (CoordY < 0) {
 		CoordY = 0;
 		Radian = PI - Radian;
+		GetNewCosSin();
 	}
 }
 
@@ -41,4 +49,26 @@ void ShipUniversal::ChangeGear(int Gear) {
 	case GEAR_::STOP:GearsToSpeed = 0; break;
 	case GEAR_::BACK_UP:GearsToSpeed = -0.25; break;
 	};
+}
+
+void ShipUniversal::Draw() {
+	DrawRotaGraph3(CoordX, CoordY, Width/2, Length/2,
+		ZOOM_MULTIPLE, ZOOM_MULTIPLE,
+		Radian, ShipHandle, TRUE, FALSE);
+}
+
+void ShipUniversal::Turn(bool Right) {
+	if (Right) {
+		Radian += (PI / 8);
+		GetNewCosSin();
+	}
+	else {
+		Radian -= (PI / 8);
+		GetNewCosSin();
+	}
+}
+
+void ShipUniversal::GetNewCosSin() {
+	ShipSin = sin(Radian);
+	ShipCos = cos(Radian);
 }

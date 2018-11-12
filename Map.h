@@ -5,7 +5,7 @@
 class Map
 {
 public:
-	Map();
+	Map() = default;
 	
 private:
 
@@ -15,19 +15,17 @@ private:
 
 class Tree {
 public:
-	Tree();
+	Tree() = default;
 	Tree(int LV);
-
-	Tree *
 	
 private:
 	int Level;
 	bool Top;
 	bool Bottom;
-	Tree *Father;
+/*	Tree *Father;
 	Tree *UL;
 	Tree *UR;
 	Tree *LR;
-	Tree *LL;
+	Tree *LL;*/
 	Map Here;
 };

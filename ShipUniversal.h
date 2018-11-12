@@ -16,16 +16,20 @@ public:
 	/*初期化
 	入力必要なこと：
 	X座標、Y座標、ラジアン、識別番号、図のハンドル*/
-	ShipUniversal(int X, int Y, int Rad, double Spe, int Rec,
-		int ImageHandle) :CoordX(X), CoordY(Y), Radian(Rad),
+	ShipUniversal(int X, int Y, double Rad, double Spe, int Rec,
+		int ImageHandle, double LMT, int Lth, int Wth) :
+		CoordX(X), CoordY(Y), Radian(Rad),
 		Speed(Spe), Recognition(Rec), ShipHandle(ImageHandle),
-		Gears(GEAR_::STOP), GearsToSpeed(0) {}
+		Gears(GEAR_::STOP), GearsToSpeed(0), LastMovedTime(LMT),
+		Length(Lth), Width(Wth),ShipSin(0),ShipCos(1) {}
 	~ShipUniversal();
 
 	/*内容変更関数*/
-	void Move(int **map);
+	void Move();
 	void ChangeGear(int Gear);
 	void Turn(bool Right);
+	void Draw();
+	void GetNewCosSin();
 
 	/*問い合わせ関数*/
 	int ReferRecognition() { return Recognition; }//識別番号
@@ -44,6 +48,8 @@ private:
 	double GearsToSpeed;//ギアと速度の関係
 	double Length;
 	double Width;
+	double LastMovedTime;//前回移動した時間
 
-
+	double ShipSin;
+	double ShipCos;
 };
