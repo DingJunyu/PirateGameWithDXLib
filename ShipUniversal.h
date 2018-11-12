@@ -21,7 +21,7 @@ public:
 		CoordX(X), CoordY(Y), Radian(Rad),
 		Speed(Spe), Recognition(Rec), ShipHandle(ImageHandle),
 		Gears(GEAR_::STOP), GearsToSpeed(0), LastMovedTime(LMT),
-		Length(Lth), Width(Wth),ShipSin(0),ShipCos(1) {}
+		Length(Lth), Width(Wth), ShipSin(0), ShipCos(1) {}
 	~ShipUniversal();
 
 	/*内容変更関数*/
@@ -36,6 +36,7 @@ public:
 	double ReferCoordX() { return CoordX; }//X座標
 	double ReferCoordY() { return CoordY; }//Y座標	
 	double ReferRadian() { return Radian; }//角度
+	int ReferGear() { return Gears; }
 
 private:
 	const int ShipHandle;//画像ハンドル
@@ -46,8 +47,8 @@ private:
 	double Speed;//速度
 	int Gears;//GEAR_に参考してください
 	double GearsToSpeed;//ギアと速度の関係
-	double Length;
-	double Width;
+	double Length;//船の長さ
+	double Width;//船の幅
 	double LastMovedTime;//前回移動した時間
 
 	double ShipSin;

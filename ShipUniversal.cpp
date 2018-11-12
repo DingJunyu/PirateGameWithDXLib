@@ -5,11 +5,13 @@ ShipUniversal::~ShipUniversal()
 }
 
 void ShipUniversal::Move() {
-	/*X軸の移動や境界チェック*/
+
 	double TimeDifference;
 	int NewTime = GetNowCount();
-	TimeDifference = (double)(NewTime - LastMovedTime)/10;
+	TimeDifference = (double)(NewTime - LastMovedTime) / 10;
 	LastMovedTime = NewTime;
+
+	/*X軸の移動や境界チェック*/
 	CoordX += ShipSin*Speed*GearsToSpeed*TimeDifference;
 	if (CoordX > BOARDER_X) {
 		CoordX = BOARDER_X;
@@ -20,7 +22,7 @@ void ShipUniversal::Move() {
 		CoordX = 0;
 		Radian = 0 - Radian;
 		GetNewCosSin();
-	}
+	}	
 
 	/*Y軸の移動や境界チェック*/
 	CoordY -= ShipCos*Speed*GearsToSpeed*TimeDifference;
@@ -57,17 +59,19 @@ void ShipUniversal::Draw() {
 		Radian, ShipHandle, TRUE, FALSE);
 }
 
+/*行く方向変更関数*/
 void ShipUniversal::Turn(bool Right) {
 	if (Right) {
-		Radian += (PI / 8);
+		Radian += (PI / 64);
 		GetNewCosSin();
 	}
 	else {
-		Radian -= (PI / 8);
+		Radian -= (PI / 64);
 		GetNewCosSin();
-	}
+	}	
 }
 
+/*行く方向変わる時三角関数に関するデータ一気に直す*/
 void ShipUniversal::GetNewCosSin() {
 	ShipSin = sin(Radian);
 	ShipCos = cos(Radian);
