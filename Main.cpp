@@ -1,3 +1,7 @@
+/****************************************************************/
+/*オブジェクトテスト用状態*/
+/****************************************************************/
+
 #include"DxLib.h"
 #include"MathDefine.h"
 #include"ShipUniversal.h"
@@ -21,8 +25,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int MyShipsHandleX[20];
 	int MyShipsHandleY[20];
 	int MapHandle;
+	int HPHandleBackground;
 	MapHandle = LoadGraph("Blue.jpg");
 	MyShipsHandle[0] = LoadGraph("Allies_Ship_Lv1_6Guns.png");
+	HPHandleBackground = LoadGraph("HP_BANNER_BACKGROUND.png");
 	GetGraphSize(MyShipsHandle[0], &MyShipsHandleX[0],
 		&MyShipsHandleY[0]);
 	/******************************/
@@ -77,6 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			MyShip.ChangeGear(MyShip.ReferGear() + 1);
 			KeyBuf[KEY_INPUT_DOWN] = 0;
 		}
+
 		MyShip.Move();
 		/********************/
 
@@ -84,6 +91,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ClearDrawScreen();
 		DrawExtendGraph(0, 0, 640, 480, MapHandle, FALSE);
 		MyShip.Draw();
+		DrawExtendGraph(0, 0, 300, 30, HPHandleBackground, TRUE);
+
 		/********************/
 
 
@@ -105,6 +114,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	DxLib::DeleteGraph(MyShipsHandle[0]);
 	DxLib::DeleteGraph(MapHandle);
+	DxLib::DeleteGraph(HPHandleBackground);
 
 	// ＤＸライブラリ使用の終了処理
 	DxLib::DxLib_End();

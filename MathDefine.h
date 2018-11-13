@@ -3,7 +3,8 @@
 
 #define BOARDER_X 640 //XÀ•W‚ÌŒÀŠE
 #define BOARDER_Y 480 //YÀ•W‚ÌŒÀŠE
+#define OUTLINE 20 //•Ó‹«”ÍˆÍ
 
 enum WEAPON_TYPE { A = 101, B, C, D };
 
-#define ZOOM_MULTIPLE 0.35
+#define ZOOM_MULTIPLE 0.5

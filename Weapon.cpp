@@ -7,11 +7,13 @@ Weapon::~Weapon()
 Ammo Weapon::Shoot(int Radian, bool Right) {
 	/*•ûŒü‚ð”»’f‚µA’e‚ð¶¬‚µ‚Ä•Ô‚·*/
 	if (Right) {
-		Ammo AmmoShoot(Speed, Radian + PI / 2, GetNowCount(), Range);
+		Ammo AmmoShoot(Speed, Radian + PI / 2, GetNowCount(), 
+			Range, AmmoHandle);
 		return AmmoShoot;
 	}
 	else {
-		Ammo AmmoShoot(Speed, Radian + PI * 1.5, GetNowCount(), Range);
+		Ammo AmmoShoot(Speed, Radian + PI * 1.5, GetNowCount(),
+			Range, AmmoHandle);
 		return AmmoShoot;
 	}
 }
@@ -38,8 +40,4 @@ bool Ammo::Move() {
 	if (GetNowCount() > ShootTime + MaxFlyTime)
 		return true;
 	return false;
-}
-
-bool Ammo::Hit() {
-	return true;
 }
