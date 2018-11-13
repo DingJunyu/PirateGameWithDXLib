@@ -27,7 +27,7 @@ public:
 	X座標、Y座標、ラジアン、識別番号、図のハンドル、生成時間、
 	長さ、幅*/
 	ShipUniversal(int X, int Y, double Rad, double Spe, int Rec,
-		int ImageHandle, double LMT, int Lth, int Wth) :
+		int *ImageHandle, double LMT, int Lth, int Wth) :
 		CoordX(X), CoordY(Y), Radian(Rad),
 		Speed(Spe), Recognition(Rec), ShipHandle(ImageHandle),
 		Gears(GEAR_::STOP), GearsToSpeed(0), LastMovedTime(LMT),
@@ -60,7 +60,7 @@ public:
 	bool Crash(double X, double Y, double R); //当たったらtrueを戻す
 
 private:
-	const int ShipHandle;//画像ハンドル
+	const int *ShipHandle;//画像ハンドル
 	const int Recognition;//識別番号
 	double CoordX;//X座標
 	double CoordY;//Y座標

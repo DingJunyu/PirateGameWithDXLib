@@ -12,7 +12,7 @@ void ShipUniversal::Move() {
 	LastMovedTime = NewTime;//新たな移動時間を記録
 
 	/*X軸の移動や境界チェック*/
-	CoordX += ShipSin*Speed*GearsToSpeed*TimeDifference;
+	CoordX += ShipSin*Speed*GearsToSpeed;
 	if (CoordX > BOARDER_X - OUTLINE) {
 		CoordX = BOARDER_X - OUTLINE;
 		ChangeGear(GEAR_::STOP);
@@ -23,7 +23,7 @@ void ShipUniversal::Move() {
 	}	
 
 	/*Y軸の移動や境界チェック*/
-	CoordY -= ShipCos*Speed*GearsToSpeed*TimeDifference;
+	CoordY -= ShipCos*Speed*GearsToSpeed;
 	if (CoordY > BOARDER_Y - OUTLINE) {
 		CoordY = BOARDER_Y - OUTLINE;
 		ChangeGear(GEAR_::STOP);
@@ -50,9 +50,13 @@ void ShipUniversal::ChangeGear(int Gear) {
 }
 
 void ShipUniversal::Draw() {
-	DrawRotaGraph3(CoordX, CoordY, Width/2, Length/2,
+	int Target = Gears;
+	if (Gears == GEAR_::BACK_UP)
+		Target = GEAR_::STOP;
+	Target--;
+	DrawRotaGraph3(CoordX, CoordY, Width / 2, Length / 2,
 		ZOOM_MULTIPLE, ZOOM_MULTIPLE,
-		Radian, ShipHandle, TRUE, FALSE);
+		Radian, *(ShipHandle + Target), TRUE, FALSE);
 }
 
 /*行く方向変更関数*/

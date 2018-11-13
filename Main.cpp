@@ -6,6 +6,7 @@
 #include"MathDefine.h"
 #include"ShipUniversal.h"
 #include"Weapon.h"
+#include"UserInterface.h"
 
 #include<list>
 #include<cmath>
@@ -26,9 +27,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int MyShipsHandleY[20];
 	int MapHandle;
 	int HPHandleBackground;
+	int SWHandle;
 	MapHandle = LoadGraph("Blue.jpg");
-	MyShipsHandle[0] = LoadGraph("Allies_Ship_Lv1_6Guns.png");
+	/*分割して読み込む*/
+	LoadDivGraph("Allies_Ship_Lv1_6cannons.png",
+		5,5,1,160,160, MyShipsHandle);
 	HPHandleBackground = LoadGraph("HP_BANNER_BACKGROUND.png");
+	SWHandle = LoadGraph("Steering_Wheel.png");
 	GetGraphSize(MyShipsHandle[0], &MyShipsHandleX[0],
 		&MyShipsHandleY[0]);
 	/******************************/
@@ -47,11 +52,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/********************/
 
 	/*ゲームオブジェクト宣言*/
-	ShipUniversal MyShip(300, 200, 0.0, 1.0, 1, MyShipsHandle[0],
+	ShipUniversal MyShip(300, 200, 0.0, 1.0, 1, MyShipsHandle,
 		GetNowCount(), MyShipsHandleX[0], MyShipsHandleY[0]);
+	UserInterface UI(&SWHandle, &HPHandleBackground);
 	/************************/
 
 	/*テスト用先処理*/
+	UI.Inif();
 	MyShip.Turn(true);
 	MyShip.ChangeGear(GEAR_::HALF_SPEED);
 	/************************/
@@ -91,7 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ClearDrawScreen();
 		DrawExtendGraph(0, 0, 640, 480, MapHandle, FALSE);
 		MyShip.Draw();
-		DrawExtendGraph(0, 0, 300, 30, HPHandleBackground, TRUE);
+		UI.Show(MyShip.ReferRadian());
 
 		/********************/
 
