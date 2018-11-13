@@ -40,7 +40,7 @@ public:
 	void Move();
 	void ChangeGear(int Gear);
 	void Turn(bool Right);
-	void Draw();
+	void Draw(double X,double Y);
 	void GetNewCosSin();
 	void ChangeLMT(double LMT);
 	void XChangeDirect();
@@ -62,14 +62,18 @@ public:
 private:
 	const int *ShipHandle;//画像ハンドル
 	const int Recognition;//識別番号
+
 	double CoordX;//X座標
 	double CoordY;//Y座標
+
+	double Length;//船の長さ
+	double Width;//船の幅
+
 	double Radian;//ラジアン//射撃の方向はRa+1/2pi and Ra+3/2pi
 	double Speed;//速度
 	int Gears;//GEAR_に参考してください
 	double GearsToSpeed;//ギアと速度の関係
-	double Length;//船の長さ
-	double Width;//船の幅
+
 	double LastMovedTime;//前回移動した時間
 
 	double ShipSin;//sin値保存用

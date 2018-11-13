@@ -15,22 +15,22 @@ void ShipUniversal::Move() {
 	CoordX += ShipSin*Speed*GearsToSpeed;
 	if (CoordX > BOARDER_X - OUTLINE) {
 		CoordX = BOARDER_X - OUTLINE;
-		ChangeGear(GEAR_::STOP);
+		ChangeGear(Gears+1);
 	}
 	if (CoordX < OUTLINE) {
 		CoordX = OUTLINE;
-		ChangeGear(GEAR_::STOP);
+		ChangeGear(Gears+1);
 	}	
 
 	/*Y軸の移動や境界チェック*/
 	CoordY -= ShipCos*Speed*GearsToSpeed;
 	if (CoordY > BOARDER_Y - OUTLINE) {
 		CoordY = BOARDER_Y - OUTLINE;
-		ChangeGear(GEAR_::STOP);
+		ChangeGear(Gears+1);
 	}
 	if (CoordY < OUTLINE) {
 		CoordY = OUTLINE;
-		ChangeGear(GEAR_::STOP);
+		ChangeGear(Gears+1);
 	}
 }
 
@@ -49,12 +49,12 @@ void ShipUniversal::ChangeGear(int Gear) {
 	};
 }
 
-void ShipUniversal::Draw() {
+void ShipUniversal::Draw(double X, double Y) {
 	int Target = Gears;
 	if (Gears == GEAR_::BACK_UP)
 		Target = GEAR_::STOP;
 	Target--;
-	DrawRotaGraph3(CoordX, CoordY, Width / 2, Length / 2,
+	DrawRotaGraph3(X, Y, Width / 2, Length / 2,
 		ZOOM_MULTIPLE, ZOOM_MULTIPLE,
 		Radian, *(ShipHandle + Target), TRUE, FALSE);
 }
@@ -109,3 +109,4 @@ bool ShipUniversal::Crash(double X, double Y, double R) {
 	}
 	return false;
 }
+

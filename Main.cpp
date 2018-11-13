@@ -7,6 +7,7 @@
 #include"ShipUniversal.h"
 #include"Weapon.h"
 #include"UserInterface.h"
+#include"Camera.h"
 
 #include<list>
 #include<cmath>
@@ -52,9 +53,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/********************/
 
 	/*ゲームオブジェクト宣言*/
-	ShipUniversal MyShip(300, 200, 0.0, 1.0, 1, MyShipsHandle,
+	ShipUniversal MyShip(300, 200, 0.0, 3.0, 1, MyShipsHandle,
 		GetNowCount(), MyShipsHandleX[0], MyShipsHandleY[0]);
 	UserInterface UI(&SWHandle, &HPHandleBackground);
+	Camera MainCamera;
 	/************************/
 
 	/*テスト用先処理*/
@@ -94,10 +96,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		MyShip.Move();
 		/********************/
 
+		MainCamera.GetPos(MyShip.ReferCoordX(),MyShip.ReferCoordY());
+
+
 		/*輸出関数*/
 		ClearDrawScreen();
-		DrawExtendGraph(0, 0, 640, 480, MapHandle, FALSE);
-		MyShip.Draw();
+		DrawRectGraph(0, 0, MainCamera.ReferPSX(), MainCamera.ReferPSY()
+			, 640, 480, MapHandle, FALSE,FALSE);
+		MyShip.Draw(MainCamera.ReferCameraX(),MainCamera.ReferCameraY());
 		UI.Show(MyShip.ReferRadian());
 
 		/********************/
