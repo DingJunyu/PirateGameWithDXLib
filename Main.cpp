@@ -80,7 +80,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			MyShip.Turn(false);
 			KeyBuf[KEY_INPUT_LEFT] = 0;
 		}
-
 		/*スピードコントローラー*/
 		if (KeyBuf[KEY_INPUT_UP] == 1 && MyShip.ReferGear()
 			> GEAR_::FULL_SPEED&& GetInputChar(TRUE)) {
@@ -92,12 +91,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			MyShip.ChangeGear(MyShip.ReferGear() + 1);
 			KeyBuf[KEY_INPUT_DOWN] = 0;
 		}
-
 		MyShip.Move();
 		/********************/
 
-		MainCamera.GetPos(MyShip.ReferCoordX(),MyShip.ReferCoordY());
-
+		/*カメラ位置を取る*/
+		MainCamera.GetPos(MyShip.ReferCoordX(), MyShip.ReferCoordY());
+		/********************/
 
 		/*輸出関数*/
 		ClearDrawScreen();
@@ -105,9 +104,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			, 640, 480, MapHandle, FALSE,FALSE);
 		MyShip.Draw(MainCamera.ReferCameraX(),MainCamera.ReferCameraY());
 		UI.Show(MyShip.ReferRadian());
-
 		/********************/
-
 
 		// メッセージループに代わる処理をする
 		if (ProcessMessage() == -1)

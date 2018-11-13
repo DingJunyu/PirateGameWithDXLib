@@ -38,7 +38,7 @@ void ShipUniversal::Move() {
 void ShipUniversal::ChangeGear(int Gear) {
 	if (Gear < 0 || Gear>6)
 		return;
-	Gears = Gear;//記録する
+	Gears = Gear;//記録して、速度も応じて変わる
 	switch (Gears) {
 	case GEAR_::FULL_SPEED:GearsToSpeed = FULL_SPEED_RATE; break;
 	case GEAR_::THREE_QUARTER:GearsToSpeed = THREE_QUARTER_RATE; break;
@@ -93,18 +93,20 @@ void ShipUniversal::YChangeDirect() {
 
 /*あたり判定データ輸入*/
 void ShipUniversal::InputCollisionCount(double X, double Y, double R) {
-	Collision[CollisionCount][0] = X;
-	Collision[CollisionCount][1] = Y;
-	Collision[CollisionCount][2] = R;
+	Collision[CollisionCount][COLLISION::COORD_X] = X;
+	Collision[CollisionCount][COLLISION::COORD_Y] = Y;
+	Collision[CollisionCount][COLLISION::RADIUS] = R;
 	CollisionCount++;
 }
 
+/*打ち込むチェック*/
 bool ShipUniversal::Crash(double X, double Y, double R) {
 	for (int i = 0; i < CollisionCount; i++) {
 		double Ans;
-		Ans = abs((X - Collision[i][0])*(Y - Collision[i][1]));
+		Ans = abs((X - Collision[i][COLLISION::COORD_X])*
+			(Y - Collision[i][COLLISION::COORD_Y]));
 		Ans = sqrt(Ans);
-		if (R + Collision[i][2] <= Ans)
+		if (R + Collision[i][COLLISION::RADIUS] <= Ans)
 			return true;
 	}
 	return false;

@@ -6,7 +6,7 @@
 #define BOARDER_Y 1440 //Y座標の限界
 #define SCREEN_X 640 //スクリームX限界
 #define SCREEN_Y 480 //スクリームY限界
-#define OUTLINE 5 //辺境範囲
+#define OUTLINE 15 //辺境範囲
 
 enum WEAPON_TYPE { A = 101, B, C, D };
 

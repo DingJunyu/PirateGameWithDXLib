@@ -6,8 +6,11 @@ public:
 	Camera();
 	~Camera();
 
+	/*’†g•ÏXŠÖ”*/
 	void GetPos(double X, double Y);
+	void ReadMapData(double X, double Y);
 
+	/*–â‚¢‡‚í‚¹ŠÖ”*/
 	bool TellMeShouldIShow(int X,int Y);
 	double ReferCameraX() { return CameraX; }
 	double ReferCameraY() { return CameraY; }
@@ -22,4 +25,3 @@ private:
 	double PrintoutStartX;
 	double PrintoutStartY;
 };
-

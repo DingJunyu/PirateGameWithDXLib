@@ -10,7 +10,6 @@ enum GEAR_ { FULL_SPEED = 1,THREE_QUARTER,HALF_SPEED,A_QUARTER,
 4:1/4‘¬
 5:’âŽÔ
 6:1/4‘¬Œã‘Þ*/
-
 const int TURN_WHEN_INPUT = 64;
 const double FULL_SPEED_RATE = 1.0;
 const double THREE_QUARTER_RATE = 0.75;
@@ -18,6 +17,8 @@ const double HALF_SPEED_RATE = 0.5;
 const double A_QUARTER_RATE = 0.25;
 const double STOP_RATE = 0;
 const double BACK_UP_RATE = -0.25;
+
+enum COLLISION { COORD_X = 0, COORD_Y, RADIUS };
 
 class ShipUniversal
 {
@@ -54,9 +55,9 @@ public:
 	double ReferRadian() { return Radian; }//Šp“x
 	int ReferGear() { return Gears; }
 	double ReferCCount() { return CollisionCount; }
-	double ReferCollisionX(int N) { return Collision[N][0]; }
-	double ReferCollisionY(int N) { return Collision[N][1]; }
-	double ReferCollisionR(int N) { return Collision[N][2]; }
+	double ReferCollisionX(int N) { return Collision[N][COLLISION::COORD_X]; }
+	double ReferCollisionY(int N) { return Collision[N][COLLISION::COORD_Y]; }
+	double ReferCollisionR(int N) { return Collision[N][COLLISION::RADIUS]; }
 	bool Crash(double X, double Y, double R); //“–‚½‚Á‚½‚çtrue‚ð–ß‚·
 
 private:
