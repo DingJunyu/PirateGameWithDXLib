@@ -112,3 +112,15 @@ bool ShipUniversal::Crash(double X, double Y, double R) {
 	return false;
 }
 
+void ShipUniversal::LoadWeapon(Weapon *Weapon) {
+	WeaponList = Weapon;
+}
+
+Ammo ShipUniversal::Shoot() {
+	return WeaponList->Shoot(Radian,true,ShipSin,ShipCos,CoordX,
+		CoordY);
+}
+
+bool ShipUniversal::WeaponUsable() {
+	return WeaponList->Usable();
+}

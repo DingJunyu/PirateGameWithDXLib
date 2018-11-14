@@ -11,7 +11,9 @@
 
 #include<list>
 #include<cmath>
+#include<vector>
 #include<time.h>
+using namespace std;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -29,10 +31,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int MapHandle;
 	int HPHandleBackground;
 	int SWHandle;
+	int AmmoHandle[20];
 	MapHandle = LoadGraph("Blue.jpg");
 	/*分割して読み込む*/
 	LoadDivGraph("Allies_Ship_Lv1_6cannons.png",
-		5,5,1,160,160, MyShipsHandle);
+		5, 5, 1, 160, 160, MyShipsHandle);
+	LoadDivGraph("Ammo_Base_Finish.png", 2, 2, 1, 20, 20, AmmoHandle);
 	HPHandleBackground = LoadGraph("HP_BANNER_BACKGROUND.png");
 	SWHandle = LoadGraph("Steering_Wheel.png");
 	GetGraphSize(MyShipsHandle[0], &MyShipsHandleX[0],
@@ -53,16 +57,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/********************/
 
 	/*ゲームオブジェクト宣言*/
-	ShipUniversal MyShip(300, 200, 0.0, 3.0, 1, MyShipsHandle,
+	ShipUniversal MyShip(300, 200, 0.0, 2.0, 1, MyShipsHandle,
 		GetNowCount(), MyShipsHandleX[0], MyShipsHandleY[0]);
 	UserInterface UI(&SWHandle, &HPHandleBackground);
 	Camera MainCamera;
+	Weapon *Alfa[6];
+	for (int i = 0; i < 6; ++i)
+		Alfa[i] = new Weapon(1000, 500, 1, 3, &AmmoHandle[0], &AmmoHandle[1]);
+	list<Ammo> AmmoOntheField;
 	/************************/
 
 	/*テスト用先処理*/
+	MyShip.LoadWeapon(*Alfa);
 	UI.Inif();
-	MyShip.Turn(true);
-	MyShip.ChangeGear(GEAR_::HALF_SPEED);
+	MyShip.ChangeGear(GEAR_::STOP);
 	/************************/
 
 	// キーが押されるまでループします
@@ -81,8 +89,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			KeyBuf[KEY_INPUT_LEFT] = 0;
 		}
 		/*スピードコントローラー*/
-		if (KeyBuf[KEY_INPUT_UP] == 1 && MyShip.ReferGear()
-			> GEAR_::FULL_SPEED&& GetInputChar(TRUE)) {
+		if (KeyBuf[KEY_INPUT_UP] == 1 && MyShip.ReferGear() > 
+			GEAR_::FULL_SPEED&& GetInputChar(TRUE)) {
 			MyShip.ChangeGear(MyShip.ReferGear() - 1);
 			KeyBuf[KEY_INPUT_UP] = 0;
 		}
@@ -91,6 +99,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			MyShip.ChangeGear(MyShip.ReferGear() + 1);
 			KeyBuf[KEY_INPUT_DOWN] = 0;
 		}
+
+		if (KeyBuf[KEY_INPUT_X] == 1&& GetInputChar(TRUE)
+			&&MyShip.WeaponUsable()) {
+			AmmoOntheField.push_back(MyShip.Shoot());
+			KeyBuf[KEY_INPUT_X] = 0;
+		}
+
+		for (auto itr = AmmoOntheField.begin(); 
+			itr != AmmoOntheField.end();) {
+			if (itr->Move())
+				itr = AmmoOntheField.erase(itr);
+			else
+				itr++;
+			if (AmmoOntheField.empty())
+				break;
+		}
+
 		MyShip.Move();
 		/********************/
 
@@ -100,9 +125,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		/*輸出関数*/
 		ClearDrawScreen();
+		/*マップ描画*/
 		DrawRectGraph(0, 0, MainCamera.ReferPSX(), MainCamera.ReferPSY()
-			, 640, 480, MapHandle, FALSE,FALSE);
-		MyShip.Draw(MainCamera.ReferCameraX(),MainCamera.ReferCameraY());
+			, 640, 480, MapHandle, FALSE, FALSE);
+		/*弾移動*/
+		if (!AmmoOntheField.empty())
+		for (auto itr = AmmoOntheField.begin(); itr != AmmoOntheField.end();
+			itr++) {
+			itr->Show(MainCamera.ReferPSX(), MainCamera.ReferPSY());
+		}
+		/*船描画*/
+		MyShip.Draw(MainCamera.ReferCameraX(), MainCamera.ReferCameraY());
+		/*UI描画*/
 		UI.Show(MyShip.ReferRadian());
 		/********************/
 
@@ -125,6 +159,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	DxLib::DeleteGraph(MyShipsHandle[0]);
 	DxLib::DeleteGraph(MapHandle);
 	DxLib::DeleteGraph(HPHandleBackground);
+	/*メモリ解放*/
+	for (int i = 0; i < 6; ++i)
+		delete Alfa[i];
 
 	// ＤＸライブラリ使用の終了処理
 	DxLib::DxLib_End();

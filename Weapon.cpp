@@ -4,16 +4,20 @@ Weapon::~Weapon()
 {
 }
 
-Ammo Weapon::Shoot(int Radian, bool Right) {
+Ammo Weapon::Shoot(double Radian, bool Right, double Sin, double Cos,
+	double X,double Y){
+	LastUsed = GetNowCount();
 	/*•ûŒü‚ğ”»’f‚µA’e‚ğ¶¬‚µ‚Ä•Ô‚·*/
 	if (Right) {
-		Ammo AmmoShoot(Speed, Radian + PI / 2, GetNowCount(), 
-			Range, AmmoHandle);
+		Ammo AmmoShoot(Speed, Radian + (PI / 2), GetNowCount(), 
+			MaxFlyTime, AmmoFlyHandle, AmmoBoomHandle,X+ CoordXtoShip*Cos,
+			Y+CoordYtoShip*Sin);
 		return AmmoShoot;
 	}
 	else {
-		Ammo AmmoShoot(Speed, Radian + PI * 1.5, GetNowCount(),
-			Range, AmmoHandle);
+		Ammo AmmoShoot(Speed, Radian + (PI * 1.5), GetNowCount(),
+			MaxFlyTime, AmmoFlyHandle, AmmoBoomHandle,X+ CoordXtoShip*Cos,
+			Y+CoordYtoShip*Sin);
 		return AmmoShoot;
 	}
 }
@@ -29,7 +33,7 @@ bool Ammo::Move() {
 	}
 
 	/*Y²‚ÌˆÚ“®‚â‹«ŠEƒ`ƒFƒbƒN*/
-	y += sin(Radian)*Speed;
+	y -= cos(Radian)*Speed;
 	if (y > BOARDER_Y) {
 		return true;
 	}
@@ -38,6 +42,17 @@ bool Ammo::Move() {
 	}
 	/*—LŒø”ÍˆÍ‚É’´‚¦‚½‚ç*/
 	if (GetNowCount() > ShootTime + MaxFlyTime)
+		return true;
+	return false;
+}
+
+void Ammo::Show(double StartX, double StartY) {
+	DrawExtendGraph(x - StartX, y - StartY, x - StartX + 10,
+		y - StartY + 10, *FlyHandle, TRUE);
+}
+
+bool Weapon::Usable() {
+	if (GetNowCount() - CoolDown >= LastUsed)
 		return true;
 	return false;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include"DxLib.h"
 #include"MathDefine.h"
+#include "Weapon.h"
 #include<cmath>
 enum GEAR_ { FULL_SPEED = 1,THREE_QUARTER,HALF_SPEED,A_QUARTER,
 	STOP,BACK_UP};
@@ -47,6 +48,9 @@ public:
 	void XChangeDirect();
 	void YChangeDirect();
 	void InputCollisionCount(double X, double Y, double R);
+	void LoadWeapon(Weapon *Weapon);
+	Ammo Shoot();
+	bool WeaponUsable();
 
 	/*問い合わせ関数*/
 	int ReferRecognition() { return Recognition; }//識別番号
@@ -83,4 +87,7 @@ private:
 	/*あたり判定用*/
 	int CollisionCount;//円の数
 	double Collision[10][3];//円のX座標、Y座標、半径
+
+	int WeaponNum;
+	Weapon *WeaponList;
 };
