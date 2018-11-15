@@ -4,20 +4,21 @@ Weapon::~Weapon()
 {
 }
 
-Ammo Weapon::Shoot(double Radian, bool Right, double Sin, double Cos,
+Ammo Weapon::Shoot(double Radian, bool Right,
 	double X,double Y){
 	LastUsed = GetNowCount();
 	/*ï˚å¸ÇîªífÇµÅAíeÇê∂ê¨ÇµÇƒï‘Ç∑*/
 	if (Right) {
-		Ammo AmmoShoot(Speed, Radian + (PI / 2), GetNowCount(), 
-			MaxFlyTime, AmmoFlyHandle, AmmoBoomHandle,X+ CoordXtoShip*Cos,
-			Y+CoordYtoShip*Sin);
+		Ammo AmmoShoot(Speed, Radian + (PI / 2), GetNowCount(),
+			MaxFlyTime, AmmoFlyHandle, AmmoBoomHandle,
+			X, Y, 10);
+			
 		return AmmoShoot;
 	}
 	else {
 		Ammo AmmoShoot(Speed, Radian + (PI * 1.5), GetNowCount(),
-			MaxFlyTime, AmmoFlyHandle, AmmoBoomHandle,X+ CoordXtoShip*Cos,
-			Y+CoordYtoShip*Sin);
+			MaxFlyTime, AmmoFlyHandle, AmmoBoomHandle,
+			X, Y, 10);
 		return AmmoShoot;
 	}
 }

@@ -1,8 +1,11 @@
 #pragma once
 #include"DxLib.h"
 #include"MathDefine.h"
-#include "Weapon.h"
+#include"Weapon.h"
 #include<cmath>
+#include<memory>
+#include<stdlib.h>
+
 enum GEAR_ { FULL_SPEED = 1,THREE_QUARTER,HALF_SPEED,A_QUARTER,
 	STOP,BACK_UP};
 /*1:全速
@@ -34,7 +37,7 @@ public:
 		Speed(Spe), Recognition(Rec), ShipHandle(ImageHandle),
 		Gears(GEAR_::STOP), GearsToSpeed(0), LastMovedTime(LMT),
 		Length(Lth), Width(Wth), ShipSin(0), ShipCos(1),
-		CollisionCount(0){}
+		CollisionCount(0),WeaponNumR(3),WeaponNumL(3){}
 
 	~ShipUniversal();
 
@@ -49,8 +52,13 @@ public:
 	void YChangeDirect();
 	void InputCollisionCount(double X, double Y, double R);
 	void LoadWeapon(Weapon *Weapon);
-	Ammo Shoot();
-	bool WeaponUsable();
+	Ammo Shoot(bool right, int Num);
+	bool WeaponUsable(bool right);
+	void LoadWeaponPos(int Num, double X, double Y, bool right);
+
+	/*テスト用中身変更関数*/
+	/*正式バッジョンは絶対使わない!*/
+	void TESTFUNCTION();
 
 	/*問い合わせ関数*/
 	int ReferRecognition() { return Recognition; }//識別番号
@@ -63,6 +71,8 @@ public:
 	double ReferCollisionY(int N) { return Collision[N][COLLISION::COORD_Y]; }
 	double ReferCollisionR(int N) { return Collision[N][COLLISION::RADIUS]; }
 	bool Crash(double X, double Y, double R); //当たったらtrueを戻す
+	int ReferWeaponOnRight() { return WeaponNumR; }
+	int ReferWeaponOnLeft() { return WeaponNumL; }
 
 private:
 	const int *ShipHandle;//画像ハンドル
@@ -88,6 +98,21 @@ private:
 	int CollisionCount;//円の数
 	double Collision[10][3];//円のX座標、Y座標、半径
 
-	int WeaponNum;
+	//中心点に対する座標
+	int WeaponNumR;
+	int WeaponNumL;
+	double *WeaponXR = new double[WeaponNumR];
+	double *WeaponYR = new double[WeaponNumR];
+	double *WeaponXL = new double[WeaponNumL];
+	double *WeaponYL = new double[WeaponNumL];
+
 	Weapon *WeaponList;
+
+	/*初期化していません！！！*/
+	int CoolTime;
+	int RightShootTime;
+	int LeftShootTime;
+
+	int HP;
+	int MaxHP;
 };

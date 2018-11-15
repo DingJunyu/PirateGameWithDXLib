@@ -5,10 +5,10 @@
 class Ammo {
 public:
 	Ammo(double Spe,double Rad,int Time,int MFT,const int *FHdl,
-		const int *BHdl,double NewX,double NewY) : 
+		const int *BHdl,double NewX,double NewY,int Da) : 
 		Speed(Spe), Radian(Rad),
 		ShootTime(Time),MaxFlyTime(MFT),FlyHandle(FHdl),
-		BoomHandle(BHdl),x(NewX),y(NewY) {}
+		BoomHandle(BHdl),x(NewX),y(NewY),Damage(Da) {}
 	~Ammo() {}
 
 	/*trueを返せば、メイン関数のリストから削除*/
@@ -27,6 +27,8 @@ private:
 	double x;//X座標
 	double y;//Y座標
 	const double Radian;
+
+	const int Damage;
 };
 
 class Weapon
@@ -39,8 +41,7 @@ public:
 		CoordYtoShip(-3) {}
 	~Weapon();
 
-	Ammo Shoot(double Radian, bool Right, double Sin, double Cos,
-		double X, double Y);
+	Ammo Shoot(double Radian, bool Right,double X, double Y);
 
 
 	bool Usable();
@@ -57,9 +58,11 @@ private:
 	const int *AmmoFlyHandle;
 	const int *AmmoBoomHandle;
 
+	/*もう使わないものを後で消す*/
 	//中心点に対する座標
 	double CoordXtoShip;
 	double CoordYtoShip;
 
 	bool Right;
+	int Damage;
 };

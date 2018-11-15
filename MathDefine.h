@@ -11,3 +11,5 @@
 enum WEAPON_TYPE { A = 101, B, C, D };
 
 #define ZOOM_MULTIPLE 0.5
+
+#define WEAPON_TYPE_NUMBER 6

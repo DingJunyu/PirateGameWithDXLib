@@ -1,7 +1,12 @@
 #include "ShipUniversal.h"
+using namespace std;
 
 ShipUniversal::~ShipUniversal()
 {
+	delete[] WeaponXR;
+	delete[] WeaponYR;
+	delete[] WeaponXL;
+	delete[] WeaponYL;
 }
 
 void ShipUniversal::Move() {
@@ -112,15 +117,67 @@ bool ShipUniversal::Crash(double X, double Y, double R) {
 	return false;
 }
 
+/*後直す*/
 void ShipUniversal::LoadWeapon(Weapon *Weapon) {
 	WeaponList = Weapon;
 }
 
-Ammo ShipUniversal::Shoot() {
-	return WeaponList->Shoot(Radian,true,ShipSin,ShipCos,CoordX,
-		CoordY);
+/*右の時はtrue,Numは武器の番号*/
+/*行列の問題はあとでも一度確認*/
+Ammo ShipUniversal::Shoot(bool right, int Num) {
+	if (right) {
+		RightShootTime = GetNowCount();
+		return WeaponList->Shoot(Radian, true,
+			CoordX - WeaponYR[Num] * ShipSin + WeaponXR[Num] * ShipCos,
+			CoordY + WeaponYR[Num] * ShipCos + WeaponXR[Num] * ShipSin);
+	}
+	else {
+		LeftShootTime = GetNowCount();
+		return WeaponList->Shoot(Radian, false,
+			CoordX - WeaponYL[Num] * ShipSin + WeaponXL[Num] * ShipCos,
+			CoordY+ WeaponYL[Num] * ShipCos + WeaponXL[Num] * ShipSin);
+	}
 }
 
-bool ShipUniversal::WeaponUsable() {
-	return WeaponList->Usable();
+/*右はtrue*/
+bool ShipUniversal::WeaponUsable(bool right) {
+	if (right)
+		if (CoolTime + RightShootTime <= GetNowCount())
+			return true;
+	if (!right)
+		if (CoolTime + LeftShootTime <= GetNowCount())
+			return true;
+	return false;
 }
+
+/*武器番号、X座標、Y座標、右はtrue*/
+void ShipUniversal::LoadWeaponPos(int Num, double X, double Y, bool right) {
+	if (right) {
+		WeaponXR[Num] = X;
+		WeaponYR[Num] = Y;
+	}
+	else {
+		WeaponXL[Num] = X;
+		WeaponYL[Num] = Y;
+	}
+}
+
+/*!!!!!!!!!!!!!テスト用!!!!!!!!!!!!!!!!*/
+void ShipUniversal::TESTFUNCTION() {
+	WeaponXR[0] = -5;
+	WeaponYR[0] = -8;
+	WeaponXR[1] = -5;
+	WeaponYR[1] = 0;
+	WeaponXR[2] = -5;
+	WeaponYR[2] = 8;
+	WeaponXL[0] = 5;
+	WeaponYL[0] = -8;
+	WeaponXL[1] = 5;
+	WeaponYL[1] = 0;
+	WeaponXL[2] = 5;
+	WeaponYL[2] = 8;
+	CoolTime = 500;
+	RightShootTime = 0;
+	LeftShootTime = 0;
+}
+/*!!!!!!!!!!!!!テスト用!!!!!!!!!!!!!!!!*/

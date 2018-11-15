@@ -61,14 +61,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		GetNowCount(), MyShipsHandleX[0], MyShipsHandleY[0]);
 	UserInterface UI(&SWHandle, &HPHandleBackground);
 	Camera MainCamera;
-	Weapon *Alfa[6];
-	for (int i = 0; i < 6; ++i)
+	/*動的メモリを使う*/
+	Weapon *Alfa[WEAPON_TYPE_NUMBER];
+	for (int i = 0; i < WEAPON_TYPE_NUMBER; ++i)
 		Alfa[i] = new Weapon(1000, 500, 1, 3, &AmmoHandle[0], &AmmoHandle[1]);
 	list<Ammo> AmmoOntheField;
 	/************************/
 
 	/*テスト用先処理*/
 	MyShip.LoadWeapon(*Alfa);
+	MyShip.TESTFUNCTION();
 	UI.Inif();
 	MyShip.ChangeGear(GEAR_::STOP);
 	/************************/
@@ -100,10 +102,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			KeyBuf[KEY_INPUT_DOWN] = 0;
 		}
 
-		if (KeyBuf[KEY_INPUT_X] == 1&& GetInputChar(TRUE)
-			&&MyShip.WeaponUsable()) {
-			AmmoOntheField.push_back(MyShip.Shoot());
+		if (KeyBuf[KEY_INPUT_X] == 1 && GetInputChar(TRUE)) {
+			if (MyShip.WeaponUsable(true))
+				for (int i = 0; i<MyShip.ReferWeaponOnRight(); i++)
+					AmmoOntheField.push_back(MyShip.Shoot(true, i));
+			if (MyShip.WeaponUsable(false))
+				for (int i = 0; i<MyShip.ReferWeaponOnLeft(); i++)
+					AmmoOntheField.push_back(MyShip.Shoot(false, i));
 			KeyBuf[KEY_INPUT_X] = 0;
+		}
+
+		if (KeyBuf[KEY_INPUT_C] == 1&& GetInputChar(TRUE)
+			&&MyShip.WeaponUsable(true)) {
+			for (int i = 0; i<MyShip.ReferWeaponOnRight(); i++)
+				AmmoOntheField.push_back(MyShip.Shoot(true, i));
+			KeyBuf[KEY_INPUT_C] = 0;
+		}
+
+		if (KeyBuf[KEY_INPUT_Z] == 1 && GetInputChar(TRUE)
+			&& MyShip.WeaponUsable(false)) {
+			for (int i = 0; i<MyShip.ReferWeaponOnLeft(); i++)
+				AmmoOntheField.push_back(MyShip.Shoot(false, i));
+			KeyBuf[KEY_INPUT_Z] = 0;
 		}
 
 		for (auto itr = AmmoOntheField.begin(); 
@@ -159,7 +179,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	DxLib::DeleteGraph(MyShipsHandle[0]);
 	DxLib::DeleteGraph(MapHandle);
 	DxLib::DeleteGraph(HPHandleBackground);
-	/*メモリ解放*/
+	/*動的メモリ解放*/
 	for (int i = 0; i < 6; ++i)
 		delete Alfa[i];
 
