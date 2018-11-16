@@ -160,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="Functions.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MathDefine.h" />
     <ClInclude Include="ShipUniversal.h" />

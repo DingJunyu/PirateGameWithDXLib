@@ -23,7 +23,7 @@ void Camera::GetPos(double X, double Y) {
 		PrintoutStartX = 0;
 	}
 	if (X >= BOARDER_X - SCREEN_X / 2) {
-		CameraX = (int)(X) % SCREEN_X;
+		CameraX = (int)(X-BOARDER_X+SCREEN_X) % SCREEN_X;
 		PrintoutStartX = BOARDER_X - SCREEN_X;
 	}
 	if (Y < SCREEN_Y / 2) {
@@ -31,7 +31,7 @@ void Camera::GetPos(double X, double Y) {
 		PrintoutStartY = 0;
 	}
 	if (Y >= BOARDER_Y - SCREEN_Y / 2) {
-		CameraY = (int)(Y) % SCREEN_Y;
+		CameraY = (int)(Y-BOARDER_Y+SCREEN_Y) % SCREEN_Y;
 		PrintoutStartY = BOARDER_Y - SCREEN_Y;
 	}
 }

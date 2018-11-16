@@ -1,4 +1,5 @@
 #pragma once
+#include"MathDefine.h"
 class UserInterface
 {
 public:

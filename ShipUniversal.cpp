@@ -3,18 +3,11 @@ using namespace std;
 
 ShipUniversal::~ShipUniversal()
 {
-	delete[] WeaponXR;
-	delete[] WeaponYR;
-	delete[] WeaponXL;
-	delete[] WeaponYL;
 }
 
 void ShipUniversal::Move() {
-
-	double TimeDifference;
-	int NewTime = GetNowCount();//今の時間を取る
-	TimeDifference = (double)(NewTime - LastMovedTime) / 10;//時間の差を計算
-	LastMovedTime = NewTime;//新たな移動時間を記録
+	XBeforeMove = CoordX;
+	YBeforeMove = CoordY;
 
 	/*X軸の移動や境界チェック*/
 	CoordX += ShipSin*Speed*GearsToSpeed;
@@ -54,14 +47,36 @@ void ShipUniversal::ChangeGear(int Gear) {
 	};
 }
 
-void ShipUniversal::Draw(double X, double Y) {
+void ShipUniversal::Draw(double X, double Y, bool Me) {
 	int Target = Gears;
 	if (Gears == GEAR_::BACK_UP)
 		Target = GEAR_::STOP;
 	Target--;
-	DrawRotaGraph3(X, Y, Width / 2, Length / 2,
-		ZOOM_MULTIPLE, ZOOM_MULTIPLE,
-		Radian, *(ShipHandle + Target), TRUE, FALSE);
+	if (Me) {
+		DrawRotaGraph3(X, Y, Width / 2, Length / 2,
+			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
+			Radian, *(ShipHandle + Target), TRUE, FALSE);
+/*		unsigned int Cr = GetColor(0, 250, 0);
+		for (int i = 0; i < CollisionCount; i++) {
+			DrawCircle(Collision[i][COLLISION::REAL_COORD_X] + X,
+				Collision[i][COLLISION::REAL_COORD_Y] + Y,
+				Collision[i][COLLISION::RADIUS], Cr, FALSE);
+		}*/
+	}
+	else {
+		DrawRotaGraph3(CoordX - X, CoordY - Y, Width / 2, Length / 2,
+			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
+			Radian, *(ShipHandle + Target), TRUE, FALSE);
+		/*test************************************************/
+/*		unsigned int Cr = GetColor(0, 250, 0);
+		for (int i = 0; i < CollisionCount; i++) {
+			DrawCircle(CoordX+Collision[i][COLLISION::REAL_COORD_X] - X,
+				CoordY+Collision[i][COLLISION::REAL_COORD_Y] - Y,
+				Collision[i][COLLISION::RADIUS], Cr, FALSE);
+		}*/
+		/*****************************************************/
+	}
+	/*中心座標はXY座標*/
 }
 
 /*行く方向変更関数*/
@@ -80,6 +95,7 @@ void ShipUniversal::Turn(bool Right) {
 void ShipUniversal::GetNewCosSin() {
 	ShipSin = sin(Radian);
 	ShipCos = cos(Radian);
+	CalCoord();
 }
 
 void ShipUniversal::ChangeLMT(double LMT) {
@@ -97,7 +113,7 @@ void ShipUniversal::YChangeDirect() {
 }
 
 /*あたり判定データ輸入*/
-void ShipUniversal::InputCollisionCount(double X, double Y, double R) {
+void ShipUniversal::InputCollision(double X, double Y, double R) {
 	Collision[CollisionCount][COLLISION::COORD_X] = X;
 	Collision[CollisionCount][COLLISION::COORD_Y] = Y;
 	Collision[CollisionCount][COLLISION::RADIUS] = R;
@@ -105,17 +121,55 @@ void ShipUniversal::InputCollisionCount(double X, double Y, double R) {
 }
 
 /*打ち込むチェック*/
-bool ShipUniversal::Crash(double X, double Y, double R) {
+bool ShipUniversal::Crash(double X, double Y, double R,
+	double StartX, double StartY) {
 	for (int i = 0; i < CollisionCount; i++) {
 		double Ans;
-		Ans = abs((X - Collision[i][COLLISION::COORD_X])*
-			(Y - Collision[i][COLLISION::COORD_Y]));
-		Ans = sqrt(Ans);
-		if (R + Collision[i][COLLISION::RADIUS] <= Ans)
+		double NewX = CoordX + Collision[i][COLLISION::REAL_COORD_X];
+		double NewY = CoordY + Collision[i][COLLISION::REAL_COORD_Y];
+
+		double RightX = StartX > X ? StartX : X;
+		double LeftX = StartX < X ? StartX : X;
+		double UpY = StartY < Y ? StartY : Y;
+		double BottomY = StartY > Y ? StartY : Y;
+		/*移動後の弾は目標を越えるかどうか*/
+		if (NewX >= LeftX && NewX <= RightX && NewY >= UpY 
+			&& NewY <= BottomY)
+			Ans = (fabs((Y - StartY)*NewX + (StartX - X)*NewY +
+			((X*StartY) - (StartX*Y)))) /
+				(sqrt(pow(Y - StartY, 2) + pow(StartX - X, 2)));
+		/*普通のあたり判定*/
+		else {
+			Ans = abs((X - NewX) * (X - NewX) +
+				(Y - NewY)*(Y - NewY));
+			Ans = sqrt(Ans);
+		}
+		
+
+		if (R + Collision[i][COLLISION::RADIUS] >= Ans) {
 			return true;
+		}
 	}
 	return false;
 }
+
+bool ShipUniversal::Crash(double X, double Y, double R) {
+	for (int i = 0; i < CollisionCount; i++) {
+		double Ans;
+		double NewX = CoordX + Collision[i][COLLISION::REAL_COORD_X];
+		double NewY = CoordY + Collision[i][COLLISION::REAL_COORD_Y];
+
+		Ans = abs((X - NewX) * (X - NewX) +
+			(Y - NewY)*(Y - NewY));
+		Ans = sqrt(Ans);
+
+		if (R + Collision[i][COLLISION::RADIUS] >= Ans) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 /*後直す*/
 void ShipUniversal::LoadWeapon(Weapon *Weapon) {
@@ -135,7 +189,7 @@ Ammo ShipUniversal::Shoot(bool right, int Num) {
 		LeftShootTime = GetNowCount();
 		return WeaponList->Shoot(Radian, false,
 			CoordX - WeaponYL[Num] * ShipSin + WeaponXL[Num] * ShipCos,
-			CoordY+ WeaponYL[Num] * ShipCos + WeaponXL[Num] * ShipSin);
+			CoordY + WeaponYL[Num] * ShipCos + WeaponXL[Num] * ShipSin);
 	}
 }
 
@@ -167,17 +221,55 @@ void ShipUniversal::TESTFUNCTION() {
 	WeaponXR[0] = -5;
 	WeaponYR[0] = -8;
 	WeaponXR[1] = -5;
-	WeaponYR[1] = 0;
+	WeaponYR[1] = 1;
 	WeaponXR[2] = -5;
-	WeaponYR[2] = 8;
+	WeaponYR[2] = 10;
 	WeaponXL[0] = 5;
 	WeaponYL[0] = -8;
 	WeaponXL[1] = 5;
-	WeaponYL[1] = 0;
+	WeaponYL[1] = 1;
 	WeaponXL[2] = 5;
-	WeaponYL[2] = 8;
+	WeaponYL[2] = 10;
 	CoolTime = 500;
 	RightShootTime = 0;
 	LeftShootTime = 0;
+	CollisionCount = 3;
+	Collision[0][0] = 0;
+	Collision[0][1] = -17;
+	Collision[0][2] = 11;
+	Collision[1][0] = 0;
+	Collision[1][1] = 0;
+	Collision[1][2] = 11;
+	Collision[2][0] = 0;
+	Collision[2][1] = 17;
+	Collision[2][2] = 11;
+	GetNewCosSin();
 }
 /*!!!!!!!!!!!!!テスト用!!!!!!!!!!!!!!!!*/
+
+void ShipUniversal::FreeMemory() {
+	delete[] WeaponXR;
+	delete[] WeaponYR;
+	delete[] WeaponXL;
+	delete[] WeaponYL;
+}
+
+void ShipUniversal::Unmove() {
+	CoordX = XBeforeMove;
+	CoordY = YBeforeMove;
+}
+
+void ShipUniversal::CalCoord() {
+	for (int i = 0; i < CollisionCount; i++) {
+		Collision[i][COLLISION::REAL_COORD_X] =
+			Collision[i][COLLISION::COORD_X] * ShipCos
+			- Collision[i][COLLISION::COORD_Y] * ShipSin;
+		Collision[i][COLLISION::REAL_COORD_Y] =
+			Collision[i][COLLISION::COORD_Y] * ShipCos
+			+ Collision[i][COLLISION::COORD_X] * ShipSin;
+		AbsShadowCenterX = ShadowCenterX * ShipCos
+			- ShadowCenterY * ShipSin;
+		AbsShadowCenterY = ShadowCenterY * ShipCos
+			+ ShadowCenterX * ShipSin;
+	}
+}

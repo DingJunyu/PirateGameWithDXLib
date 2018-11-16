@@ -16,6 +16,13 @@ public:
 	bool Out() { return true; }
 	void Show(double StartX, double StartY);
 
+	double ReferX() { return x; }
+	double ReferY() { return y; }
+	double ReferR() { return 2; }
+	double ReferSX() { return StartX; }
+	double ReferSY() { return StartY; }
+
+
 private:
 	const int *FlyHandle;
 	const int *BoomHandle;
@@ -26,9 +33,13 @@ private:
 
 	double x;//Xç¿ïW
 	double y;//Yç¿ïW
+	double StartX;
+	double StartY;
+
 	const double Radian;
 
 	const int Damage;
+	bool Usable;
 };
 
 class Weapon
@@ -42,9 +53,6 @@ public:
 	~Weapon();
 
 	Ammo Shoot(double Radian, bool Right,double X, double Y);
-
-
-	bool Usable();
 
 private:
 	const double Speed;//íeÇÃë¨ìx

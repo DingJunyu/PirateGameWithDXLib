@@ -4,6 +4,7 @@ Weapon::~Weapon()
 {
 }
 
+/*速度の影響はあとで入れる*/
 Ammo Weapon::Shoot(double Radian, bool Right,
 	double X,double Y){
 	LastUsed = GetNowCount();
@@ -25,6 +26,8 @@ Ammo Weapon::Shoot(double Radian, bool Right,
 
 bool Ammo::Move() {
 	/*X軸の移動や境界チェック*/
+	StartX = x;
+	StartY = y;
 	x += sin(Radian)*Speed;
 	if (x > BOARDER_X) {
 		return true;
@@ -50,10 +53,4 @@ bool Ammo::Move() {
 void Ammo::Show(double StartX, double StartY) {
 	DrawExtendGraph(x - StartX, y - StartY, x - StartX + 10,
 		y - StartY + 10, *FlyHandle, TRUE);
-}
-
-bool Weapon::Usable() {
-	if (GetNowCount() - CoolDown >= LastUsed)
-		return true;
-	return false;
 }
