@@ -14,14 +14,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	{
 		return -1;        // エラーが起きたら直ちに終了
 	}
+	SetMainWindowText("Pirate");
+	SetAlwaysRunFlag(TRUE);
 
 	/*画像読む、画像ハンドルの宣言*/
 	int MyShipsHandle[20];
 	int MyShipsHandleX[20];
 	int MyShipsHandleY[20];
+	int ShipShadowHandle;
 	int MapHandle;
+	/*UI*/
 	int HPHandleBackground;
 	int SWHandle;
+	/*島など*/
+	int MapObjectHandle;
+	/*弾*/
 	int AmmoHandle[20];
 	MapHandle = LoadGraph("Background.jpg");
 	/*分割して読み込む*/
@@ -30,6 +37,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	LoadDivGraph("Ammo_Base_Finish.png", 2, 2, 1, 20, 20, AmmoHandle);
 	HPHandleBackground = LoadGraph("HP_BANNER_BACKGROUND.png");
 	SWHandle = LoadGraph("Steering_Wheel.png");
+	MapObjectHandle =LoadGraph("Island_1.png");
+	ShipShadowHandle = LoadGraph("Allies_Ship_Lv1_6Cannons_Shadow.png");
 	GetGraphSize(MyShipsHandle[0], &MyShipsHandleX[0],
 		&MyShipsHandleY[0]);
 	/******************************/
@@ -48,7 +57,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/********************/
 
 	/*ゲームオブジェクト宣言*/
-	ShipUniversal MyShip(300, 200, 0.0, 2.0, 1, MyShipsHandle,
+	ShipUniversal MyShip(300, 200, 0.0, 2.0, 1, MyShipsHandle, 
+		&ShipShadowHandle, MyShipsHandle,
 		GetNowCount(), MyShipsHandleX[0], MyShipsHandleY[0]);
 	UserInterface UI(&SWHandle, &HPHandleBackground);
 	Camera MainCamera;
@@ -59,6 +69,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			&AmmoHandle[1]);
 	list<Ammo> AmmoOntheField;
 	list<ShipUniversal> EnemyShips;
+	MapObject MPO(3,&MapObjectHandle);
 	/************************/
 
 	/*テスト変数*/
@@ -73,6 +84,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MyShip.LoadWeapon(*Alfa);
 	MyShip.TESTFUNCTION();
 	UI.Inif();
+	MPO.TEST();
 	/************************/
 
 	// キーが押されるまでループします
@@ -83,11 +95,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		/*船　　テ　　ス　　ト*/
 		if ((rand() % 100 < RP) && (Counter < MaxCount)) {
 			double X, Y;
-			X = rand() % (BOARDER_X)-60 + 60;
-			Y = rand() % (BOARDER_Y)-60 + 60;
+			X = rand() % (BOARDER_X) - 60 + 60;
+			Y = rand() % (BOARDER_Y) - 60 + 60;
 			double R;
 			R = (((double)((rand() % 16 + 1)) / 16)) * PI;
 			EnemyShips.push_back(ShipUniversal(X, Y, R, 2.0, 2, MyShipsHandle,
+				&ShipShadowHandle, MyShipsHandle,
 				0,MyShipsHandleX[0], MyShipsHandleY[0]));
 			auto Able = EnemyShips.end();
 			Able--;
@@ -160,23 +173,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		for (auto itr = AmmoOntheField.begin();
 			itr != AmmoOntheField.end();) {
 			for (auto Mark = EnemyShips.begin();
-				Mark != EnemyShips.end();) {
+				Mark != EnemyShips.end();Mark++) {
 				if (Mark->Crash(itr->ReferX(), itr->ReferY(), itr->ReferR(),
 					itr->ReferSX(), itr->ReferSY())) {
-					Mark->FreeMemory();
 					itr = AmmoOntheField.erase(itr);
-					Mark = EnemyShips.erase(Mark);
-
-					EnemyKilled++;
-					Counter--;
+					if (Mark->ReferVisable()) {
+						EnemyKilled++;
+						Counter--;
+					}
 					break;
 				}
-				else
-					Mark++;//削除操作がいなければ一位後ろに進む
 			}
 			if (itr != AmmoOntheField.end())
 				itr++;//削除操作がいなければ一位後ろに進む
 			if (AmmoOntheField.empty()||EnemyShips.empty())
+				break;
+		}
+
+		for (auto Mark = EnemyShips.begin(); Mark != EnemyShips.end();) {
+			if (Mark->ReferEnd()) {
+				Mark->FreeMemory();
+				Mark = EnemyShips.erase(Mark);
+			}
+			else
+				Mark++;
+			if (EnemyShips.empty())
 				break;
 		}
 
@@ -196,6 +217,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 			}
 		}
+		for (int i = 0; i < MPO.ReferColCount(); ++i) {
+			if (MyShip.Crash(MPO.ReferColRX(i), MPO.ReferColRY(i),
+				MPO.ReferColR(i))) {
+				Movable = false;
+				break;
+			}
+		}
 Outline:
 		if (!Movable) {
 			MyShip.ChangeGear(GEAR_::STOP);
@@ -212,8 +240,10 @@ Outline:
 		/*輸出関数*/
 		ClearDrawScreen();
 		/*マップ描画*/
-		DrawRectGraph(0, 0, MainCamera.ReferPSX(), MainCamera.ReferPSY()
+		DrawRectGraph(0, 0, (int)(MainCamera.ReferPSX()),
+			(int)(MainCamera.ReferPSY())
 			, SCREEN_X, SCREEN_Y, MapHandle, FALSE, FALSE);
+		MPO.Show(MainCamera.ReferPSX(), MainCamera.ReferPSY());
 		/*弾移動*/
 		if (!AmmoOntheField.empty())
 		for (auto itr = AmmoOntheField.begin(); itr != AmmoOntheField.end();

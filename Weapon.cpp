@@ -51,6 +51,7 @@ bool Ammo::Move() {
 }
 
 void Ammo::Show(double StartX, double StartY) {
-	DrawExtendGraph(x - StartX, y - StartY, x - StartX + 10,
-		y - StartY + 10, *FlyHandle, TRUE);
+	DrawExtendGraph((int)(x - StartX), (int)(y - StartY), 
+		(int)(x - StartX + 10),
+		(int)(y - StartY + 10), *FlyHandle, TRUE);
 }

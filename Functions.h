@@ -5,6 +5,7 @@
 #include"Weapon.h"
 #include"UserInterface.h"
 #include"Camera.h"
+#include"MapObject.h"
 
 #include<list>
 #include<cmath>
@@ -13,5 +14,6 @@
 #include<string>
 #include<sstream>
 #include<stdlib.h>
+
 
 ShipUniversal MakeANewShip(int *MyShipsHandle, int MSX, int MSY);

@@ -10,6 +10,30 @@
 
 enum WEAPON_TYPE { A = 101, B, C, D };
 
+enum COLLISION {
+	COORD_X = 0, COORD_Y, RADIUS,
+	REAL_COORD_X, REAL_COORD_Y
+};
+
+enum GEAR_ {
+	FULL_SPEED = 1, THREE_QUARTER, HALF_SPEED, A_QUARTER,
+	STOP, BACK_UP
+};
+/*1:‘S‘¬
+2:3/4‘¬
+3:1/2‘¬
+4:1/4‘¬
+5:’âŽÔ
+6:1/4‘¬Œã‘Þ*/
+const int TURN_WHEN_INPUT = 64;
+const double FULL_SPEED_RATE = 1.0;
+const double THREE_QUARTER_RATE = 0.75;
+const double HALF_SPEED_RATE = 0.5;
+const double A_QUARTER_RATE = 0.25;
+const double STOP_RATE = 0;
+const double BACK_UP_RATE = -0.25;
+
+
 #define ZOOM_MULTIPLE 0.5
 
 #define WEAPON_TYPE_NUMBER 6

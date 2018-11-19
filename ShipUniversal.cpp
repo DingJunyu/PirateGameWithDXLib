@@ -48,30 +48,51 @@ void ShipUniversal::ChangeGear(int Gear) {
 }
 
 void ShipUniversal::Draw(double X, double Y, bool Me) {
+	if (!Wait)//Ç†ÇΩÇËîªíËÇæÇØÇ≈ÇÕê≥èÌÇ…ìÆÇ©Ç»Ç¢ÅAVisableÇÃïœçXÇÕÇ†Ç∆Ç…è˜ÇÈ
+		Visable = false;
+	if (!Visable) {
+		ShowDestroy(X, Y, Me);
+		return;
+	}
 	int Target = Gears;
 	if (Gears == GEAR_::BACK_UP)
 		Target = GEAR_::STOP;
 	Target--;
 	if (Me) {
-		DrawRotaGraph3(X, Y, Width / 2, Length / 2,
+		DrawRotaGraph3((int)(X+ShadowCenterX), 
+			(int)(Y+ShadowCenterY),
+			(int)(Width / 2), (int)(Length / 2),
+			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
+			Radian, *ShadowHandle, TRUE, FALSE);
+		DrawRotaGraph3((int)(X),(int)(Y), 
+			(int)(Width / 2), (int)(Length / 2),
 			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
 			Radian, *(ShipHandle + Target), TRUE, FALSE);
 /*		unsigned int Cr = GetColor(0, 250, 0);
 		for (int i = 0; i < CollisionCount; i++) {
-			DrawCircle(Collision[i][COLLISION::REAL_COORD_X] + X,
-				Collision[i][COLLISION::REAL_COORD_Y] + Y,
+			DrawCircle(Collision[i][COLLISION::REAL_COORD_X] - CoordX 
+			+ X,
+				Collision[i][COLLISION::REAL_COORD_Y] -CoordY
+				+ Y,
 				Collision[i][COLLISION::RADIUS], Cr, FALSE);
 		}*/
 	}
 	else {
-		DrawRotaGraph3(CoordX - X, CoordY - Y, Width / 2, Length / 2,
+		DrawRotaGraph3((int)(CoordX - X + ShadowCenterX), 
+			(int)(CoordY - Y + ShadowCenterY),
+			(int)(Width / 2), (int)(Length / 2),
+			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
+			Radian, *ShadowHandle, TRUE, FALSE);
+
+		DrawRotaGraph3((int)(CoordX - X), (int)(CoordY - Y), 
+			(int)(Width / 2),(int)( Length / 2),
 			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
 			Radian, *(ShipHandle + Target), TRUE, FALSE);
 		/*test************************************************/
 /*		unsigned int Cr = GetColor(0, 250, 0);
 		for (int i = 0; i < CollisionCount; i++) {
-			DrawCircle(CoordX+Collision[i][COLLISION::REAL_COORD_X] - X,
-				CoordY+Collision[i][COLLISION::REAL_COORD_Y] - Y,
+			DrawCircle(Collision[i][COLLISION::REAL_COORD_X] - X,
+				Collision[i][COLLISION::REAL_COORD_Y] - Y,
 				Collision[i][COLLISION::RADIUS], Cr, FALSE);
 		}*/
 		/*****************************************************/
@@ -125,8 +146,8 @@ bool ShipUniversal::Crash(double X, double Y, double R,
 	double StartX, double StartY) {
 	for (int i = 0; i < CollisionCount; i++) {
 		double Ans;
-		double NewX = CoordX + Collision[i][COLLISION::REAL_COORD_X];
-		double NewY = CoordY + Collision[i][COLLISION::REAL_COORD_Y];
+		double &NewX = Collision[i][COLLISION::REAL_COORD_X];
+		double &NewY = Collision[i][COLLISION::REAL_COORD_Y];
 
 		double RightX = StartX > X ? StartX : X;
 		double LeftX = StartX < X ? StartX : X;
@@ -147,6 +168,9 @@ bool ShipUniversal::Crash(double X, double Y, double R,
 		
 
 		if (R + Collision[i][COLLISION::RADIUS] >= Ans) {
+			HP--;
+			if (HP <= 0)
+				Wait = false;;
 			return true;
 		}
 	}
@@ -156,8 +180,8 @@ bool ShipUniversal::Crash(double X, double Y, double R,
 bool ShipUniversal::Crash(double X, double Y, double R) {
 	for (int i = 0; i < CollisionCount; i++) {
 		double Ans;
-		double NewX = CoordX + Collision[i][COLLISION::REAL_COORD_X];
-		double NewY = CoordY + Collision[i][COLLISION::REAL_COORD_Y];
+		double &NewX = Collision[i][COLLISION::REAL_COORD_X];
+		double &NewY = Collision[i][COLLISION::REAL_COORD_Y];
 
 		Ans = abs((X - NewX) * (X - NewX) +
 			(Y - NewY)*(Y - NewY));
@@ -252,6 +276,10 @@ void ShipUniversal::FreeMemory() {
 	delete[] WeaponYR;
 	delete[] WeaponXL;
 	delete[] WeaponYL;
+	for (int i = 0; i < CollisionCount; i++) {
+		delete[] Collision[i];
+	}
+	delete[] Collision;
 }
 
 void ShipUniversal::Unmove() {
@@ -261,15 +289,36 @@ void ShipUniversal::Unmove() {
 
 void ShipUniversal::CalCoord() {
 	for (int i = 0; i < CollisionCount; i++) {
-		Collision[i][COLLISION::REAL_COORD_X] =
+		Collision[i][COLLISION::REAL_COORD_X] = CoordX +
 			Collision[i][COLLISION::COORD_X] * ShipCos
 			- Collision[i][COLLISION::COORD_Y] * ShipSin;
-		Collision[i][COLLISION::REAL_COORD_Y] =
+		Collision[i][COLLISION::REAL_COORD_Y] = CoordY +
 			Collision[i][COLLISION::COORD_Y] * ShipCos
 			+ Collision[i][COLLISION::COORD_X] * ShipSin;
-		AbsShadowCenterX = ShadowCenterX * ShipCos
-			- ShadowCenterY * ShipSin;
-		AbsShadowCenterY = ShadowCenterY * ShipCos
-			+ ShadowCenterX * ShipSin;
 	}
+}
+
+void ShipUniversal::ShowDestroy(double X, double Y, bool Me) {
+	int &TBI = TimeBeforeInvisable;
+	int &TP = TimePassed;
+	int &FC = FrameCount;
+	int &FAO = FrameAnimationOwned;
+	TP++;
+	if (TP % (TBI / FAO) == 0 && TP != 0) {
+		FC++;
+	}
+	if (TP == TimeBeforeInvisable)
+		EndofAnimation = true;
+
+	if(Me)
+		DrawRotaGraph3((int)(X),(int)(Y),
+			(int)(Width / 2), (int)(Length / 2),
+			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
+			Radian, *(DestroyHandle + FC), TRUE, FALSE);
+
+	else
+		DrawRotaGraph3((int)(CoordX - X), (int)(CoordY - Y),
+		(int)(Width / 2), (int)(Length / 2),
+			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
+			Radian, *(DestroyHandle + FC), TRUE, FALSE);
 }
