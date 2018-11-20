@@ -20,8 +20,9 @@ public:
 		Gears(GEAR_::STOP), GearsToSpeed(0), LastMovedTime(LMT),
 		Length(Lth), Width(Wth), ShipSin(0), ShipCos(1),
 		CollisionCount(3), WeaponNumR(3), WeaponNumL(3), Visable(true),
-		ShadowCenterX(3), ShadowCenterY(3), HP(1), TimeBeforeInvisable(60),
-		TimePassed(0), FrameCount(0), FrameAnimationOwned(5),
+		ShadowCenterX(SHADOW_X), ShadowCenterY(SHADOW_Y), HP(6), 
+		FrameBeforeInvisable(300),
+		FramePassed(0), FrameCount(0), FrameAnimationOwned(10),
 		EndofAnimation(false),Wait(true)
 		{
 			for (int i = 0; i < CollisionCount; ++i)
@@ -138,8 +139,8 @@ private:
 
 	bool Wait;
 	bool Visable;
-	int TimeBeforeInvisable;
-	int TimePassed;
+	int FrameBeforeInvisable;
+	int FramePassed;
 	int FrameCount;
 	int FrameAnimationOwned;
 	bool EndofAnimation;

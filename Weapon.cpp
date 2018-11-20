@@ -25,6 +25,8 @@ Ammo Weapon::Shoot(double Radian, bool Right,
 }
 
 bool Ammo::Move() {
+	if (!Usable)
+		return false;
 	/*X軸の移動や境界チェック*/
 	StartX = x;
 	StartY = y;
@@ -51,7 +53,27 @@ bool Ammo::Move() {
 }
 
 void Ammo::Show(double StartX, double StartY) {
-	DrawExtendGraph((int)(x - StartX), (int)(y - StartY), 
+	if (Usable)
+		DrawExtendGraph((int)(x - StartX), (int)(y - StartY),
 		(int)(x - StartX + 10),
-		(int)(y - StartY + 10), *FlyHandle, TRUE);
+			(int)(y - StartY + 10), *FlyHandle, TRUE);
+	else {
+		int &TBI = FrameBeforeInvisable;
+		int &TP = FramePassed;
+		int &FC = FrameCount;
+		int &FAO = FrameAnimationOwned;
+		TP++;
+		if (TP % (TBI / FAO) == 0 && TP != 0) {
+			FC++;
+		}
+		if (TP == TBI)
+			EndofAnimation = true;
+		DrawExtendGraph((int)(x - StartX), (int)(y - StartY),
+			(int)(x - StartX + 10),
+			(int)(y - StartY + 10), *BoomHandle, TRUE);
+	}
+}
+
+void Ammo::ChangeUsable() {
+	Usable = false;
 }

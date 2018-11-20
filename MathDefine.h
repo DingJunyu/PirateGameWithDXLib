@@ -37,3 +37,6 @@ const double BACK_UP_RATE = -0.25;
 #define ZOOM_MULTIPLE 0.5
 
 #define WEAPON_TYPE_NUMBER 6
+
+#define SHADOW_X 4
+#define SHADOW_Y 4

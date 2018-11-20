@@ -48,9 +48,7 @@ void ShipUniversal::ChangeGear(int Gear) {
 }
 
 void ShipUniversal::Draw(double X, double Y, bool Me) {
-	if (!Wait)//‚ ‚½‚è”»’è‚¾‚¯‚Å‚Í³í‚É“®‚©‚È‚¢AVisable‚Ì•ÏX‚Í‚ ‚Æ‚É÷‚é
-		Visable = false;
-	if (!Visable) {
+	if (!Wait) {
 		ShowDestroy(X, Y, Me);
 		return;
 	}
@@ -169,6 +167,8 @@ bool ShipUniversal::Crash(double X, double Y, double R,
 
 		if (R + Collision[i][COLLISION::RADIUS] >= Ans) {
 			HP--;
+			if (!Wait)
+				Visable = false;
 			if (HP <= 0)
 				Wait = false;;
 			return true;
@@ -299,15 +299,15 @@ void ShipUniversal::CalCoord() {
 }
 
 void ShipUniversal::ShowDestroy(double X, double Y, bool Me) {
-	int &TBI = TimeBeforeInvisable;
-	int &TP = TimePassed;
+	int &TBI = FrameBeforeInvisable;
+	int &TP = FramePassed;
 	int &FC = FrameCount;
 	int &FAO = FrameAnimationOwned;
 	TP++;
 	if (TP % (TBI / FAO) == 0 && TP != 0) {
 		FC++;
 	}
-	if (TP == TimeBeforeInvisable)
+	if (TP == TBI)
 		EndofAnimation = true;
 
 	if(Me)
