@@ -1,31 +1,44 @@
 #pragma once
 #include"ShipUniversal.h"
 #include"Weapon.h"
-/**/
-class Map
-{
-public:
-	Map() = default;
-	
-private:
+#include"MapObject.h"
+#include<list>
 
-	ShipUniversal * ShipsHere[10];
-	Ammo * AmmoHere[50];
+enum SON_NODE_TYPE {
+	SHIP = 0,
+	AMMO,
+	MAP_OBJECT
 };
 
 class Tree {
 public:
-	Tree() = default;
-	Tree(int LV);
+	friend Tree * ConstructMap();
+
+	Tree() :Top(false), Bottom(false) {}
+	Tree(bool T) :Top(T),Depth(0),Bottom(false) {}
+	Tree(int Dth) :Depth(Dth), Top(false), Bottom(Dth == 5) {}
+
+	/*ç\ë¢ä÷êî*/
+	Tree * Build();
+
+	/*âï˙ä÷êî*/
+	bool FreeMemory();
+
+	/*ñ‚Ç¢çáÇÌÇπä÷êî*/
 	
 private:
-	int Level;
+	int Depth;
 	bool Top;
 	bool Bottom;
-/*	Tree *Father;
-	Tree *UL;
-	Tree *UR;
-	Tree *LR;
-	Tree *LL;*/
-	Map Here;
+	Tree *ChildNode[4];
+
+	int CountOfShip;
+	int CountOfAmmo;
+	int CountOfMapObject;
+
+	std::list<ShipUniversal> ShipList;
+	std::list<Ammo> AmmoList;
+	std::list<MapObject> MapObjectList;
 };
+
+Tree * ConstructMap();

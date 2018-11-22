@@ -55,8 +55,8 @@ bool Ammo::Move() {
 void Ammo::Show(double StartX, double StartY) {
 	if (Usable)
 		DrawExtendGraph((int)(x - StartX), (int)(y - StartY),
-		(int)(x - StartX + 10),
-			(int)(y - StartY + 10), *FlyHandle, TRUE);
+		(int)(x - StartX + AMMO_LENGTH),
+			(int)(y - StartY + AMMO_LENGTH), *FlyHandle, TRUE);
 	else {
 		int &TBI = FrameBeforeInvisable;
 		int &TP = FramePassed;
@@ -69,8 +69,8 @@ void Ammo::Show(double StartX, double StartY) {
 		if (TP == TBI)
 			EndofAnimation = true;
 		DrawExtendGraph((int)(x - StartX), (int)(y - StartY),
-			(int)(x - StartX + 10),
-			(int)(y - StartY + 10), *BoomHandle, TRUE);
+			(int)(x - StartX + AMMO_LENGTH),
+			(int)(y - StartY + AMMO_LENGTH), *BoomHandle, TRUE);
 	}
 }
 

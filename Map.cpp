@@ -1,13 +1,33 @@
 #include "Map.h"
 
-Tree::Tree(int LV) {
-	Level = LV;
-	if (LV == 1)
-		Top = true;
-	else
-		Top = false;
-	if (LV == 4)
-		Bottom = true;
-	else
-		Bottom = false;
+Tree * Tree::Build() {
+	if (Depth + 1 > 5)
+		return NULL;
+	Tree *Here = new Tree(Depth + 1);
+	*Here->ChildNode[UL] = Build();
+	*Here->ChildNode[UR] = Build();
+	*Here->ChildNode[LR] = Build();
+	*Here->ChildNode[LL] = Build();
+	if (Here->ChildNode[UL] == NULL)
+		return NULL;
+	return Here;
+}
+
+Tree * ConstructMap() {
+	Tree *Here = new Tree(true);
+	return Here;
+}
+
+bool Tree::FreeMemory() {
+	if (Depth >= 5)
+		return true;
+	if (ChildNode[UL]->FreeMemory())
+		delete ChildNode[UL];
+	if (ChildNode[UR]->FreeMemory())
+		delete ChildNode[UR];
+	if (ChildNode[LR]->FreeMemory())
+		delete ChildNode[LR];
+	if (ChildNode[LL]->FreeMemory())
+		delete ChildNode[LL];
+	return true;
 }

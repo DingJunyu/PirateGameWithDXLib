@@ -33,6 +33,8 @@ const double A_QUARTER_RATE = 0.25;
 const double STOP_RATE = 0;
 const double BACK_UP_RATE = -0.25;
 
+enum QUADRANT { UL = 0, UR, LR, LL };
+
 
 #define ZOOM_MULTIPLE 0.5
 
@@ -40,3 +42,5 @@ const double BACK_UP_RATE = -0.25;
 
 #define SHADOW_X 4
 #define SHADOW_Y 4
+
+#define AMMO_LENGTH 15

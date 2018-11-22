@@ -31,16 +31,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int MapObjectHandle;
 	/*弾*/
 	int AmmoHandle[20];
-	MapHandle = LoadGraph("Background.jpg");
+	MapHandle = LoadGraph("Image/Background.jpg");
 	/*分割して読み込む*/
-	LoadDivGraph("Allies_Ship_Lv1_6cannons.png",
+	LoadDivGraph("Image/Allies_Ship_Lv1_6cannons.png",
 		5, 5, 1, 160, 160, MyShipsHandle);
-	LoadDivGraph("Ammo_Base_Finish.png", 2, 2, 1, 20, 20, AmmoHandle);
-	HPHandleBackground = LoadGraph("HP_BANNER_BACKGROUND.png");
-	SWHandle = LoadGraph("Steering_Wheel.png");
-	MapObjectHandle =LoadGraph("Island_1.png");
-	ShipShadowHandle = LoadGraph("Allies_Ship_Lv1_6Cannons_Shadow.png");
-	LoadDivGraph("Allies_Ship_Lv1_6cannon_sink.png",
+	LoadDivGraph("Image/Ammo_Base_Finish.png", 2, 2, 1, 20, 20, AmmoHandle);
+	HPHandleBackground = LoadGraph("Image/HP_BANNER_BACKGROUND.png");
+	SWHandle = LoadGraph("Image/Steering_Wheel.png");
+	MapObjectHandle =LoadGraph("Image/Island_1.png");
+	ShipShadowHandle =
+		LoadGraph("Image/Allies_Ship_Lv1_6Cannons_Shadow.png");
+	LoadDivGraph("Image/Allies_Ship_Lv1_6cannon_sink.png",
 		10, 10, 1, 160, 160, ShipSinkHandle);
 	GetGraphSize(MyShipsHandle[0], &MyShipsHandleX[0],
 		&MyShipsHandleY[0]);
@@ -61,7 +62,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/********************/
 
 	/*ゲームオブジェクト宣言*/
-	ShipUniversal MyShip(300, 200, 0.0, 2.0, 1, MyShipsHandle, 
+	ShipUniversal MyShip(300, 200, 0.0, 1.5, 1, MyShipsHandle, 
 		&ShipShadowHandle, ShipSinkHandle,
 		GetNowCount(), MyShipsHandleX[0], MyShipsHandleY[0]);
 	UserInterface UI(&SWHandle, &HPHandleBackground);
@@ -69,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/*動的メモリを使う*/
 	Weapon *Alfa[WEAPON_TYPE_NUMBER];
 	for (int i = 0; i < WEAPON_TYPE_NUMBER; ++i)
-		Alfa[i] = new Weapon(1000, 500, 1, 3, &AmmoHandle[0],
+		Alfa[i] = new Weapon(500, 500, 1, 5.0, &AmmoHandle[0],
 			&AmmoHandle[1]);
 	list<Ammo> AmmoOntheField;
 	list<ShipUniversal> EnemyShips;
@@ -110,7 +111,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			Y = rand() % (BOARDER_Y) - 60 + 60;
 			double R;
 			R = (((double)((rand() % 16 + 1)) / 16)) * PI;
-			EnemyShips.push_back(ShipUniversal(X, Y, R, 2.0, 2, MyShipsHandle,
+			EnemyShips.push_back(
+				ShipUniversal(X, Y, R, 2.0, 2, MyShipsHandle,
 				&ShipShadowHandle, ShipSinkHandle,
 				0,MyShipsHandleX[0], MyShipsHandleY[0]));
 			auto Able = EnemyShips.end();
@@ -196,9 +198,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (Mark->Crash(itr->ReferX(), itr->ReferY(), itr->ReferR(),
 					itr->ReferSX(), itr->ReferSY())) {
 					itr->ChangeUsable();
-					if (Mark->ReferVisable()) {
+					if(Mark->ReferVisable()!=Mark->ReferWait())
 						EnemyKilled++;
-					}
 					break;
 				}
 			}

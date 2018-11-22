@@ -30,6 +30,7 @@ void ShipUniversal::Move() {
 		CoordY = OUTLINE;
 		ChangeGear(Gears+1);
 	}
+	CalCoord();
 }
 
 /*スピード変更*/
@@ -66,14 +67,14 @@ void ShipUniversal::Draw(double X, double Y, bool Me) {
 			(int)(Width / 2), (int)(Length / 2),
 			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
 			Radian, *(ShipHandle + Target), TRUE, FALSE);
-/*		unsigned int Cr = GetColor(0, 250, 0);
+		unsigned int Cr = GetColor(0, 250, 0);
 		for (int i = 0; i < CollisionCount; i++) {
 			DrawCircle(Collision[i][COLLISION::REAL_COORD_X] - CoordX 
 			+ X,
 				Collision[i][COLLISION::REAL_COORD_Y] -CoordY
 				+ Y,
 				Collision[i][COLLISION::RADIUS], Cr, FALSE);
-		}*/
+		}
 	}
 	else {
 		DrawRotaGraph3((int)(CoordX - X + ShadowCenterX), 
@@ -151,6 +152,7 @@ bool ShipUniversal::Crash(double X, double Y, double R,
 		double LeftX = StartX < X ? StartX : X;
 		double UpY = StartY < Y ? StartY : Y;
 		double BottomY = StartY > Y ? StartY : Y;
+
 		/*移動後の弾は目標を越えるかどうか*/
 		if (NewX >= LeftX && NewX <= RightX && NewY >= UpY 
 			&& NewY <= BottomY)
@@ -167,8 +169,10 @@ bool ShipUniversal::Crash(double X, double Y, double R,
 
 		if (R + Collision[i][COLLISION::RADIUS] >= Ans) {
 			HP--;
-			if (!Wait)
+			if (!Wait) {
 				Visable = false;
+				return true;
+			}
 			if (HP <= 0)
 				Wait = false;;
 			return true;
@@ -259,7 +263,7 @@ void ShipUniversal::TESTFUNCTION() {
 	LeftShootTime = 0;
 	CollisionCount = 3;
 	Collision[0][0] = 0;
-	Collision[0][1] = -17;
+	Collision[0][1] = -22;
 	Collision[0][2] = 11;
 	Collision[1][0] = 0;
 	Collision[1][1] = 0;

@@ -79,6 +79,7 @@ public:
 	int ReferWeaponOnLeft() { return WeaponNumL; }
 	bool ReferVisable() { return Visable; }
 	bool ReferEnd() { return EndofAnimation; }
+	bool ReferWait() { return Wait; }
 
 private:
 	const int *ShipHandle;//‰æ‘œƒnƒ“ƒhƒ‹
