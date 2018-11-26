@@ -20,11 +20,20 @@ public:
 
 	/*構造関数*/
 	Tree * Build();
-
 	/*解放関数*/
 	bool FreeMemory();
 
+	/*データ操作関数*/
+	void InsertShip(ShipUniversal Target);
+	void InsertAmmo(Ammo Target);
+	void InsertObject(MapObject Target);
+
+	void DeleteShip(ShipUniversal Target);
+	void DeleteAmmo(Ammo Target);
+	void DeleteObject(MapObject Target);
+
 	/*問い合わせ関数*/
+
 	
 private:
 	int Depth;

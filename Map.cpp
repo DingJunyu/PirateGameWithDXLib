@@ -1,5 +1,5 @@
 #include "Map.h"
-
+/*Ä‹A‚Å–Ø‚ð¶¬*/
 Tree * Tree::Build() {
 	if (Depth + 1 > 5)
 		return NULL;
@@ -13,13 +13,16 @@ Tree * Tree::Build() {
 	return Here;
 }
 
+/*–Ø¶¬ŠÖ”*/
 Tree * ConstructMap() {
 	Tree *Here = new Tree(true);
 	return Here;
 }
 
+/*ƒƒ‚ƒŠ‰ð•úŠÖ”*/
+/*Ž¸”s‘Î‰ž‚È‚µ*/
 bool Tree::FreeMemory() {
-	if (Depth >= 5)
+	if (Depth > 5)
 		return true;
 	if (ChildNode[UL]->FreeMemory())
 		delete ChildNode[UL];

@@ -20,7 +20,7 @@ public:
 		Gears(GEAR_::STOP), GearsToSpeed(0), LastMovedTime(LMT),
 		Length(Lth), Width(Wth), ShipSin(0), ShipCos(1),
 		CollisionCount(3), WeaponNumR(3), WeaponNumL(3), Visable(true),
-		ShadowCenterX(SHADOW_X), ShadowCenterY(SHADOW_Y), HP(6), 
+		ShadowCenterX(SHADOW_X), ShadowCenterY(SHADOW_Y), HP(12), 
 		FrameBeforeInvisable(300),
 		FramePassed(0), FrameCount(0), FrameAnimationOwned(10),
 		EndofAnimation(false),Wait(true)
@@ -32,7 +32,7 @@ public:
 	~ShipUniversal();
 
 	/*内容変更関数*/
-	void Move();
+	void Move(bool Player);
 	void Unmove();
 	void ChangeGear(int Gear);
 	void Turn(bool Right);
@@ -54,6 +54,7 @@ public:
 	/*テスト用中身変更関数*/
 	/*正式バッジョンは絶対使わない!*/
 	void TESTFUNCTION();
+	void ChangeMAXHP();
 
 	/*問い合わせ関数*/
 	int ReferRecognition() { return Recognition; }//識別番号
@@ -80,6 +81,9 @@ public:
 	bool ReferVisable() { return Visable; }
 	bool ReferEnd() { return EndofAnimation; }
 	bool ReferWait() { return Wait; }
+
+	int ReferHP() { return HP; }
+	int ReferMaxHP() { return MaxHP; }
 
 private:
 	const int *ShipHandle;//画像ハンドル
@@ -136,7 +140,7 @@ private:
 	int LeftShootTime;
 
 	int HP;
-	int MaxHP;
+	int MaxHP;//初期化していません
 
 	bool Wait;
 	bool Visable;

@@ -5,7 +5,7 @@ ShipUniversal::~ShipUniversal()
 {
 }
 
-void ShipUniversal::Move() {
+void ShipUniversal::Move(bool Player) {
 	XBeforeMove = CoordX;
 	YBeforeMove = CoordY;
 
@@ -14,10 +14,14 @@ void ShipUniversal::Move() {
 	if (CoordX > BOARDER_X - OUTLINE) {
 		CoordX = BOARDER_X - OUTLINE;
 		ChangeGear(Gears+1);
+		if (!Player)
+			XChangeDirect();
 	}
 	if (CoordX < OUTLINE) {
 		CoordX = OUTLINE;
 		ChangeGear(Gears+1);
+		if (!Player)
+			XChangeDirect();
 	}	
 
 	/*Y軸の移動や境界チェック*/
@@ -25,10 +29,14 @@ void ShipUniversal::Move() {
 	if (CoordY > BOARDER_Y - OUTLINE) {
 		CoordY = BOARDER_Y - OUTLINE;
 		ChangeGear(Gears+1);
+		if (!Player)
+			YChangeDirect();
 	}
 	if (CoordY < OUTLINE) {
 		CoordY = OUTLINE;
 		ChangeGear(Gears+1);
+		if (!Player)
+			YChangeDirect();
 	}
 	CalCoord();
 }
@@ -67,14 +75,16 @@ void ShipUniversal::Draw(double X, double Y, bool Me) {
 			(int)(Width / 2), (int)(Length / 2),
 			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
 			Radian, *(ShipHandle + Target), TRUE, FALSE);
+		/*
 		unsigned int Cr = GetColor(0, 250, 0);
 		for (int i = 0; i < CollisionCount; i++) {
-			DrawCircle(Collision[i][COLLISION::REAL_COORD_X] - CoordX 
-			+ X,
-				Collision[i][COLLISION::REAL_COORD_Y] -CoordY
+			DrawCircle((int)Collision[i][COLLISION::REAL_COORD_X] - CoordX
+				+ X,
+				(int)Collision[i][COLLISION::REAL_COORD_Y] - CoordY
 				+ Y,
-				Collision[i][COLLISION::RADIUS], Cr, FALSE);
+				(int)Collision[i][COLLISION::RADIUS], Cr, FALSE);
 		}
+		*/
 	}
 	else {
 		DrawRotaGraph3((int)(CoordX - X + ShadowCenterX), 
@@ -173,8 +183,10 @@ bool ShipUniversal::Crash(double X, double Y, double R,
 				Visable = false;
 				return true;
 			}
-			if (HP <= 0)
-				Wait = false;;
+			if (HP <= 0) {
+				ChangeGear(GEAR_::STOP);
+				Wait = false;
+			}
 			return true;
 		}
 	}
@@ -246,6 +258,7 @@ void ShipUniversal::LoadWeaponPos(int Num, double X, double Y, bool right) {
 
 /*!!!!!!!!!!!!!テスト用!!!!!!!!!!!!!!!!*/
 void ShipUniversal::TESTFUNCTION() {
+	//武器を配置
 	WeaponXR[0] = -5;
 	WeaponYR[0] = -8;
 	WeaponXR[1] = -5;
@@ -261,6 +274,7 @@ void ShipUniversal::TESTFUNCTION() {
 	CoolTime = 500;
 	RightShootTime = 0;
 	LeftShootTime = 0;
+	//あたり判定用
 	CollisionCount = 3;
 	Collision[0][0] = 0;
 	Collision[0][1] = -22;
@@ -271,6 +285,7 @@ void ShipUniversal::TESTFUNCTION() {
 	Collision[2][0] = 0;
 	Collision[2][1] = 17;
 	Collision[2][2] = 11;
+	//今のsinとcos状態を記録
 	GetNewCosSin();
 }
 /*!!!!!!!!!!!!!テスト用!!!!!!!!!!!!!!!!*/
@@ -325,4 +340,9 @@ void ShipUniversal::ShowDestroy(double X, double Y, bool Me) {
 		(int)(Width / 2), (int)(Length / 2),
 			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
 			Radian, *(DestroyHandle + FC), TRUE, FALSE);
+}
+
+void ShipUniversal::ChangeMAXHP() {
+	HP = 30;
+	MaxHP = 30;
 }

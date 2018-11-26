@@ -9,10 +9,12 @@ public:
 
 	void Show(double Radian);
 	void Inif();
+	void ReadHPandMaxHP(int H,int MH);
 
 private:
 	const int *SteeringWheelHandle;
 	const int *HPBarBaseHandle;
 	int SWL, SWW;
+	int HP, MAXHP;
 };
 

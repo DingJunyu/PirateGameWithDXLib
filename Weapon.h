@@ -9,7 +9,7 @@ public:
 		Speed(Spe), Radian(Rad),
 		ShootTime(Time),MaxFlyTime(MFT),FlyHandle(FHdl),
 		BoomHandle(BHdl),x(NewX),y(NewY),Damage(Da), Usable(true),
-		FrameBeforeInvisable(60),
+		FrameBeforeInvisable(10),
 		FramePassed(0), FrameCount(0), FrameAnimationOwned(1),
 		EndofAnimation(false) {}
 	~Ammo() {}
