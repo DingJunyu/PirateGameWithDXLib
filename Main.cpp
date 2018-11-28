@@ -35,6 +35,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/*UI*/
 	int HPHandleBackground;
 	int SWHandle;
+	int SpeedControlHandle;
+	int SpeedControlMarkHandle;
 	/*島など*/
 	int MapObjectHandle;
 	/*弾*/
@@ -49,9 +51,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		5, 5, 1, 160, 160, EnemyShipsHandle);
 	/*普通に読み込む*/
 	MapHandle = LoadGraph("Image/Background.jpg");
+	/*UI*/
 	HPHandleBackground = LoadGraph("Image/HP_BANNER_BACKGROUND.png");
 	SWHandle = LoadGraph("Image/Steering_Wheel.png");
+	SpeedControlHandle = LoadGraph("Image/SPEED_BAR.png");
+	SpeedControlMarkHandle = LoadGraph("Image/MARKER.png");
+	/*MAPOBJECT*/
 	MapObjectHandle =LoadGraph("Image/Island_1.png");
+	/*船*/
 	ShipShadowHandle =
 		LoadGraph("Image/Allies_Ship_Lv1_6Cannons_Shadow.png");
 	EnemyShipShadowHandle = LoadGraph(
@@ -80,16 +87,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/********************/
 
 	/*ゲームオブジェクト宣言*/
-	ShipUniversal MyShip(300, 200, 0.0, 1.5, 1, MyShipsHandle, 
+	ShipUniversal MyShip(300, 200, 0.0, 2.5, 1, MyShipsHandle, 
 		&ShipShadowHandle, ShipSinkHandle,
 		GetNowCount(), MyShipsHandleX, MyShipsHandleY);
-	UserInterface UI(&SWHandle, &HPHandleBackground);
+	UserInterface UI(&SWHandle, &HPHandleBackground,&SpeedControlHandle,
+		&SpeedControlMarkHandle);
 	Camera MainCamera;
 	/*動的メモリを使う*/
 	Weapon *Alfa[WEAPON_TYPE_NUMBER];
 	for (int i = 0; i < WEAPON_TYPE_NUMBER; ++i)
 		Alfa[i] = new Weapon(500, 500, 1, 5.0, &AmmoHandle[0],
-			&AmmoHandle[1]);
+			&AmmoHandle[1],1);
 	list<Ammo> AmmoOntheField;
 	list<Ammo> EnemyAmmoOntheField;
 	list<ShipUniversal> EnemyShips;
@@ -100,7 +108,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	bool Ans = false;
 	int EnemyKilled = 0;
 	int Counter = 0;
-	const int MaxCount = 20;
+	const int MaxCount = 10;
 	int RP = 5;
 	/************************/
 
@@ -138,7 +146,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			auto Able = EnemyShips.end();
 			Able--;
 			Able->TESTFUNCTION();
-			Able->CalCoord();
 			Able->LoadWeapon(*Alfa);
 			Counter ++;
 		}
@@ -199,6 +206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 			KeyBuf[KEY_INPUT_Z] = 0;
 		}
+		MyShip.Move(true);
 
 		/*敵移動*/
 		for (auto Mark = EnemyShips.begin(); 
@@ -208,7 +216,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (rand() % 100 > 95&&Mark->ReferGear()>GEAR_::FULL_SPEED) {
 				Mark->ChangeGear(Mark->ReferGear() - 1);
 			}
-			else if (rand() % 100 > 99 && Mark->ReferGear() < GEAR_::BACK_UP) 
+			else if (rand() % 100 > 98 && Mark->ReferGear() < GEAR_::BACK_UP) 
 			{
 				Mark->ChangeGear(Mark->ReferGear() + 1);
 			}
@@ -218,6 +226,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			else if (rand() % 100 > 90) {
 				Mark->Turn(false);
 			}
+			
+			if(sqrt(pow(Mark->ReferCoordX()-MyShip.ReferCoordX(),2)+
+				pow(Mark->ReferCoordY() - MyShip.ReferCoordY(), 2))<200)
 			if (rand() % 100 > 97 && Mark->WeaponUsable(false)) {
 				for (int i = 0; i < Mark->ReferWeaponOnLeft(); i++) {
 					EnemyAmmoOntheField.push_back(Mark->Shoot(false, i));
@@ -235,47 +246,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (!AmmoOntheField.empty())
 		for (auto itr = AmmoOntheField.begin(); 
 			itr != AmmoOntheField.end(); itr++) {
-			if (itr->Move())
-				itr->ChangeUsable();
+			itr->Move();
 		}
 		if (!EnemyAmmoOntheField.empty())
 			for (auto itr = EnemyAmmoOntheField.begin();
 				itr != EnemyAmmoOntheField.end(); itr++) {
-			if (itr->Move())
-				itr->ChangeUsable();
+			itr->Move();
 		}
 
 		/*あたり判定*/
-		if (!AmmoOntheField.empty()&&!EnemyShips.empty())
-		for (auto itr = AmmoOntheField.begin();
-			itr != AmmoOntheField.end();itr++) {
-			if (!itr->ReferUsable())
-				continue;
+		if (!AmmoOntheField.empty() && !EnemyShips.empty())
+			for (auto itr = AmmoOntheField.begin();
+				itr != AmmoOntheField.end(); itr++) {
+			if (!itr->ReferUsable()) continue;
 			for (auto Mark = EnemyShips.begin();
 				Mark != EnemyShips.end(); Mark++) {
-				if (Mark->Crash(itr->ReferX(), itr->ReferY(), itr->ReferR(),
-					itr->ReferSX(), itr->ReferSY())) {
-					itr->ChangeUsable();
-					if(Mark->ReferVisable()!=Mark->ReferWait())
+				if (Crash(&*Mark, &*itr)) {
+					if (Mark->ReferKill())
 						EnemyKilled++;
 					break;
 				}
 			}
 		}
+
 		/*敵の弾と自分*/
 		if (!EnemyAmmoOntheField.empty())
 			for (auto itr = EnemyAmmoOntheField.begin();
 				itr != EnemyAmmoOntheField.end(); itr++) {
-			if (!itr->ReferUsable())
-				continue;
-			if (MyShip.Crash(itr->ReferX(), itr->ReferY(), itr->ReferR(),
-				itr->ReferSX(), itr->ReferSY())) {
-				itr->ChangeUsable();
-			}
+			Crash(&MyShip, &*itr);
 		}
 
 
 		/*使えないものを削除*/
+		/*沈んだ敵の船*/
 		for (auto Mark = EnemyShips.begin(); Mark != EnemyShips.end();) {
 			if (Mark->ReferEnd()) {
 				Counter--;
@@ -307,90 +310,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (EnemyAmmoOntheField.empty())
 				break;
 		}
+		/*************************************/
 
-		/*敵の打ち込む判定*/
+		/*ぶつかる判定部分*/
+		/*船の間*/
 		if(!EnemyShips.empty()){
 			for (auto Mark = EnemyShips.begin();
 				Mark != EnemyShips.end(); Mark++) {
-				if (!Mark->ReferWait())
-					continue;
-				for (int i = 0; i < Mark->ReferCCount(); ++i) {
-					if (MyShip.Crash(Mark->ReferRCollisionX(i),
-						Mark->ReferRCollisionY(i),
-						Mark->ReferCollisionR(i))) {
-						if (rand() % 2 == 0)
-							Mark->XChangeDirect();
-						else
-							Mark->YChangeDirect();
-					}
-				}
+				Crash(&MyShip, &*Mark);
 				for (auto BMark = EnemyShips.begin();
 					BMark != EnemyShips.end(); BMark++) {
-					if (!BMark->ReferWait())
+					if (Mark == BMark)
 						continue;
-					if (BMark == Mark)
-						continue;
-					for (int i = 0; i < Mark->ReferCCount(); ++i) {
-						if (Mark->Crash(BMark->ReferRCollisionX(i),
-							BMark->ReferRCollisionY(i),
-							BMark->ReferCollisionR(i))) {
-							if (rand() % 2 == 0)
-								Mark->XChangeDirect();
-							else
-								Mark->YChangeDirect();
-						}
-					}
-
+					Crash(&*Mark, &*BMark);
 				}
 			}
 		}
-
+		/*敵と島*/
 		if (!EnemyShips.empty())
 			for (auto Mark = EnemyShips.begin();
 				Mark != EnemyShips.end(); Mark++) {
 			if (!Mark->ReferWait())
 				continue;
-			for (int i = 0; i < MPO.ReferColCount(); ++i) {
-				if (Mark->Crash(MPO.ReferColRX(i), MPO.ReferColRY(i),
-					MPO.ReferColR(i))) {
-					if (rand() % 2 == 0)
-						Mark->XChangeDirect();
-					else
-						Mark->YChangeDirect();
-				}
-			}
+			Crash(&*Mark, MPO);
 		}
 
-		/*打ち込む判定*/
-		MyShip.Move(true);
-		MyShip.CalCoord();
-		bool Movable = true;
-		if(!EnemyShips.empty())
-			for (auto Mark = EnemyShips.begin();
-				Mark != EnemyShips.end();Mark++) {
-			for (int i = 0; i < MyShip.ReferCCount(); ++i) {
-				if (Mark->Crash(MyShip.ReferRCollisionX(i), 
-					MyShip.ReferRCollisionY(i),
-					MyShip.ReferCollisionR(i))) {
-					Movable = false;
-					goto Outline;//テスト用
-				}
-			}
-		}
+		/*自機と島*/
 		for (int i = 0; i < MPO.ReferColCount(); ++i) {
-			if (MyShip.Crash(MPO.ReferColRX(i), MPO.ReferColRY(i),
-				MPO.ReferColR(i))) {
-				Movable = false;
-				break;
-			}
-		}
-Outline:
-		if (!Movable) {
-			MyShip.ChangeGear(GEAR_::STOP);
-			MyShip.Unmove();
-			MyShip.CalCoord();
-		}
-		
+			Crash(&MyShip, MPO);
+		}		
 		/********************/
 
 		/*カメラ位置を取る*/
@@ -407,27 +355,28 @@ Outline:
 			, SCREEN_X, SCREEN_Y, MapHandle, FALSE, FALSE);
 		MPO.Show(MainCamera.ReferPSX(), MainCamera.ReferPSY());
 		/*船描画*/
-		MyShip.Draw(MainCamera.ReferCameraX(), MainCamera.ReferCameraY(),true);
+		MyShip.Draw(MainCamera.ReferCameraX(), MainCamera.ReferCameraY()
+			,true,false);
 		if (!EnemyShips.empty()) {
 			for (auto Mark = EnemyShips.begin();
-				Mark != EnemyShips.end();Mark++)
-				Mark->Draw(MainCamera.ReferPSX(), MainCamera.ReferPSY(), false);
+				Mark != EnemyShips.end(); Mark++)
+				Mark->Draw(MainCamera.ReferPSX(), MainCamera.ReferPSY(),
+					false, false);
 
 		}
 		/*弾描画*/
 		if (!AmmoOntheField.empty())
-			for (auto itr = AmmoOntheField.begin(); itr != AmmoOntheField.end();
-				itr++) {
+			for (auto itr = AmmoOntheField.begin();
+				itr != AmmoOntheField.end();itr++) {
 			itr->Show(MainCamera.ReferPSX(), MainCamera.ReferPSY());
 		}
 		if (!EnemyAmmoOntheField.empty())
 			for (auto itr = EnemyAmmoOntheField.begin(); 
-				itr != EnemyAmmoOntheField.end();
-				itr++) {
+				itr != EnemyAmmoOntheField.end();itr++) {
 			itr->Show(MainCamera.ReferPSX(), MainCamera.ReferPSY());
 		}
 		/*UI描画*/
-		UI.Show(MyShip.ReferRadian());
+		UI.Show(MyShip.ReferRadian(),MyShip.ReferGear());
 		char str[25];
 		_itoa_s(EnemyKilled, str, 10);
 		unsigned int Cr = GetColor(255, 0, 0);
@@ -437,7 +386,8 @@ Outline:
 				"GAME OVER", Cr);
 		}
 		/********************/
-		ScreenFlip();
+
+		ScreenFlip();//画像輸出
 
 		if (MyShip.ReferHP() <= 0) {
 			rewind(stdin);

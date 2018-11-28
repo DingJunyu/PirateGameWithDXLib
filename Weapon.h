@@ -8,7 +8,8 @@ public:
 		const int *BHdl,double NewX,double NewY,int Da) : 
 		Speed(Spe), Radian(Rad),
 		ShootTime(Time),MaxFlyTime(MFT),FlyHandle(FHdl),
-		BoomHandle(BHdl),x(NewX),y(NewY),Damage(Da), Usable(true),
+		BoomHandle(BHdl),x(NewX),y(NewY),StartX(NewX),
+		StartY(NewY),Damage(Da), Usable(true),
 		FrameBeforeInvisable(10),
 		FramePassed(0), FrameCount(0), FrameAnimationOwned(1),
 		EndofAnimation(false) {}
@@ -25,6 +26,7 @@ public:
 	double ReferR() { return 2; }
 	double ReferSX() { return StartX; }
 	double ReferSY() { return StartY; }
+	int ReferDamage() { return Damage; }
 
 	bool ReferUsable() { return Usable; }
 	bool ReferEOA() { return EndofAnimation; }
@@ -58,10 +60,11 @@ class Weapon
 {
 public:
 	/*初期化するためにはRan,CDとtypeが必要*/
-	Weapon(int Ran, int CD, int Ty, double Spe,int *AFHdl,int *ABHdl) :
+	Weapon(int Ran, int CD, int Ty, double Spe,int *AFHdl,int *ABHdl,
+		int Da) :
 		MaxFlyTime(Ran), CoolDown(CD),Type(Ty),Speed(Spe),
 		AmmoFlyHandle(AFHdl), AmmoBoomHandle(ABHdl),CoordXtoShip(1),
-		CoordYtoShip(-3) {}
+		CoordYtoShip(-3),Damage(Da) {}
 	~Weapon();
 
 	Ammo Shoot(double Radian, bool Right,double X, double Y);
@@ -72,6 +75,8 @@ private:
 
 	const int CoolDown;//射撃間隔
 	const int Type;//武器の識別番号
+
+	const int Damage;
 
 	int LastUsed;//前回使った時間を記録
 
@@ -84,5 +89,4 @@ private:
 	double CoordYtoShip;
 
 	bool Right;
-	int Damage;
 };

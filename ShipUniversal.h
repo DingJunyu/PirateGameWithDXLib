@@ -2,6 +2,7 @@
 #include"DxLib.h"
 #include"MathDefine.h"
 #include"Weapon.h"
+#include"MapObject.h"
 #include<cmath>
 #include<memory>
 #include<stdlib.h>
@@ -27,6 +28,7 @@ public:
 		{
 			for (int i = 0; i < CollisionCount; ++i)
 				Collision[i] = new double[5];
+			CalCoord();
 		}
 
 	~ShipUniversal();
@@ -36,13 +38,14 @@ public:
 	void Unmove();
 	void ChangeGear(int Gear);
 	void Turn(bool Right);
-	void Draw(double X,double Y, bool Me);
+	void Draw(double X,double Y, bool Me, bool Test);
 	void ShowDestroy(double X, double Y,bool Me);
 
 	void GetNewCosSin();
 	void ChangeLMT(double LMT);
 	void XChangeDirect();
 	void YChangeDirect();
+	void ChangeDirect() { XChangeDirect(); YChangeDirect(); }
 	void InputCollision(double X, double Y, double R);
 	void LoadWeapon(Weapon *Weapon);
 	Ammo Shoot(bool right, int Num);
@@ -50,6 +53,9 @@ public:
 	void LoadWeaponPos(int Num, double X, double Y, bool right);
 	void FreeMemory();
 	void CalCoord();
+	void ChangeHP(int x) { HP -= x; }
+	void ChangeVisable() { Visable = false; }
+	void ChangeWait() { Wait = false; }
 
 	/*テスト用中身変更関数*/
 	/*正式バッジョンは絶対使わない!*/
@@ -73,17 +79,17 @@ public:
 	double ReferCollisionR(int N)
 	{ return Collision[N][COLLISION::RADIUS]; }
 
-	bool Crash(double X, double Y, double R,
-		double StartX,double StartY); //当たったらtrueを戻す
-	bool Crash(double X, double Y, double R); //当たったらtrueを戻す
 	int ReferWeaponOnRight() { return WeaponNumR; }
 	int ReferWeaponOnLeft() { return WeaponNumL; }
 	bool ReferVisable() { return Visable; }
 	bool ReferEnd() { return EndofAnimation; }
 	bool ReferWait() { return Wait; }
 
+	bool ReferKill() { return Visable != Wait; }
+
 	int ReferHP() { return HP; }
 	int ReferMaxHP() { return MaxHP; }
+	int ReferAlive() { return HP > 0; }
 
 private:
 	const int *ShipHandle;//画像ハンドル
@@ -150,3 +156,8 @@ private:
 	int FrameAnimationOwned;
 	bool EndofAnimation;
 };
+
+/*ぶつかる判定やあたり判定*/
+bool Crash(ShipUniversal *A, ShipUniversal *B);
+bool Crash(ShipUniversal *A, Ammo *B);
+bool Crash(ShipUniversal *A, MapObject B);

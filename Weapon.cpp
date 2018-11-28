@@ -12,14 +12,14 @@ Ammo Weapon::Shoot(double Radian, bool Right,
 	if (Right) {
 		Ammo AmmoShoot(Speed, Radian + (PI / 2), GetNowCount(),
 			MaxFlyTime, AmmoFlyHandle, AmmoBoomHandle,
-			X, Y, 10);
+			X, Y, Damage);
 			
 		return AmmoShoot;
 	}
 	else {
 		Ammo AmmoShoot(Speed, Radian + (PI * 1.5), GetNowCount(),
 			MaxFlyTime, AmmoFlyHandle, AmmoBoomHandle,
-			X, Y, 10);
+			X, Y, Damage);
 		return AmmoShoot;
 	}
 }
@@ -32,23 +32,23 @@ bool Ammo::Move() {
 	StartY = y;
 	x += sin(Radian)*Speed;
 	if (x > BOARDER_X) {
-		return true;
+		ChangeUsable();
 	}
 	if (x < 0) {
-		return true;
+		ChangeUsable();
 	}
 
 	/*Y軸の移動や境界チェック*/
 	y -= cos(Radian)*Speed;
 	if (y > BOARDER_Y) {
-		return true;
+		ChangeUsable();
 	}
 	if (y < 0) {
-		return true;
+		ChangeUsable();
 	}
 	/*有効範囲に超えたら*/
 	if (GetNowCount() > ShootTime + MaxFlyTime)
-		return true;
+		ChangeUsable();
 	return false;
 }
 

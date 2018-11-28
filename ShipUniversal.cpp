@@ -56,7 +56,7 @@ void ShipUniversal::ChangeGear(int Gear) {
 	};
 }
 
-void ShipUniversal::Draw(double X, double Y, bool Me) {
+void ShipUniversal::Draw(double X, double Y, bool Me, bool Test) {
 	if (!Wait) {
 		ShowDestroy(X, Y, Me);
 		return;
@@ -75,16 +75,16 @@ void ShipUniversal::Draw(double X, double Y, bool Me) {
 			(int)(Width / 2), (int)(Length / 2),
 			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
 			Radian, *(ShipHandle + Target), TRUE, FALSE);
-		/*
-		unsigned int Cr = GetColor(0, 250, 0);
-		for (int i = 0; i < CollisionCount; i++) {
-			DrawCircle((int)Collision[i][COLLISION::REAL_COORD_X] - CoordX
-				+ X,
-				(int)Collision[i][COLLISION::REAL_COORD_Y] - CoordY
-				+ Y,
-				(int)Collision[i][COLLISION::RADIUS], Cr, FALSE);
+		if (Test) {
+			unsigned int Cr = GetColor(0, 250, 0);
+			for (int i = 0; i < CollisionCount; i++) {
+				DrawCircle((int)(Collision[i][COLLISION::REAL_COORD_X] 
+					- CoordX + X),
+					(int)(Collision[i][COLLISION::REAL_COORD_Y]
+					- CoordY + Y),
+					(int)Collision[i][COLLISION::RADIUS], Cr, FALSE);
+			}
 		}
-		*/
 	}
 	else {
 		DrawRotaGraph3((int)(CoordX - X + ShadowCenterX), 
@@ -97,13 +97,15 @@ void ShipUniversal::Draw(double X, double Y, bool Me) {
 			(int)(Width / 2),(int)( Length / 2),
 			ZOOM_MULTIPLE, ZOOM_MULTIPLE,
 			Radian, *(ShipHandle + Target), TRUE, FALSE);
-		/*test************************************************/
-/*		unsigned int Cr = GetColor(0, 250, 0);
-		for (int i = 0; i < CollisionCount; i++) {
-			DrawCircle(Collision[i][COLLISION::REAL_COORD_X] - X,
-				Collision[i][COLLISION::REAL_COORD_Y] - Y,
-				Collision[i][COLLISION::RADIUS], Cr, FALSE);
-		}*/
+		if (Test) {
+			unsigned int Cr = GetColor(0, 250, 0);
+			for (int i = 0; i < CollisionCount; i++) {
+				DrawCircle((int)(Collision[i][COLLISION::REAL_COORD_X]
+					- X),
+					(int)(Collision[i][COLLISION::REAL_COORD_Y] - Y),
+					(int)(Collision[i][COLLISION::RADIUS]), Cr, FALSE);
+			}
+		}
 		/*****************************************************/
 	}
 	/*中心座標はXY座標*/
@@ -150,73 +152,14 @@ void ShipUniversal::InputCollision(double X, double Y, double R) {
 	CollisionCount++;
 }
 
-/*打ち込むチェック*/
-bool ShipUniversal::Crash(double X, double Y, double R,
-	double StartX, double StartY) {
-	for (int i = 0; i < CollisionCount; i++) {
-		double Ans;
-		double &NewX = Collision[i][COLLISION::REAL_COORD_X];
-		double &NewY = Collision[i][COLLISION::REAL_COORD_Y];
 
-		double RightX = StartX > X ? StartX : X;
-		double LeftX = StartX < X ? StartX : X;
-		double UpY = StartY < Y ? StartY : Y;
-		double BottomY = StartY > Y ? StartY : Y;
-
-		/*移動後の弾は目標を越えるかどうか*/
-		if (NewX >= LeftX && NewX <= RightX && NewY >= UpY 
-			&& NewY <= BottomY)
-			Ans = (fabs((Y - StartY)*NewX + (StartX - X)*NewY +
-			((X*StartY) - (StartX*Y)))) /
-				(sqrt(pow(Y - StartY, 2) + pow(StartX - X, 2)));
-		/*普通のあたり判定*/
-		else {
-			Ans = abs((X - NewX) * (X - NewX) +
-				(Y - NewY)*(Y - NewY));
-			Ans = sqrt(Ans);
-		}
-		
-
-		if (R + Collision[i][COLLISION::RADIUS] >= Ans) {
-			HP--;
-			if (!Wait) {
-				Visable = false;
-				return true;
-			}
-			if (HP <= 0) {
-				ChangeGear(GEAR_::STOP);
-				Wait = false;
-			}
-			return true;
-		}
-	}
-	return false;
-}
-
-bool ShipUniversal::Crash(double X, double Y, double R) {
-	for (int i = 0; i < CollisionCount; i++) {
-		double Ans;
-		double &NewX = Collision[i][COLLISION::REAL_COORD_X];
-		double &NewY = Collision[i][COLLISION::REAL_COORD_Y];
-
-		Ans = abs((X - NewX) * (X - NewX) +
-			(Y - NewY)*(Y - NewY));
-		Ans = sqrt(Ans);
-
-		if (R + Collision[i][COLLISION::RADIUS] >= Ans) {
-			return true;
-		}
-	}
-	return false;
-}
-
-
-/*後直す*/
+/*武器を船にロードする*/
 void ShipUniversal::LoadWeapon(Weapon *Weapon) {
 	WeaponList = Weapon;
 }
 
 /*右の時はtrue,Numは武器の番号*/
+/*武器の相対位置と船の絶対位置に合わせて弾を打つ*/
 /*行列の問題はあとでも一度確認*/
 Ammo ShipUniversal::Shoot(bool right, int Num) {
 	if (right) {
@@ -345,4 +288,98 @@ void ShipUniversal::ShowDestroy(double X, double Y, bool Me) {
 void ShipUniversal::ChangeMAXHP() {
 	HP = 30;
 	MaxHP = 30;
+}
+
+//渡されたデータを直接操作したいのため、ポインターで渡す
+bool Crash(ShipUniversal *A, ShipUniversal *B) {
+	for (int i = 0; i < A->ReferCCount(); i++) {
+		for (int j = 0; j < B->ReferCCount(); j++) {
+			double Ans;
+			Ans = abs(pow(A->ReferRCollisionX(i) - B->ReferRCollisionX(j), 2)
+				+pow(A->ReferRCollisionY(i)-B->ReferRCollisionY(j),2));
+			Ans = sqrt(Ans);
+			/*ぶつかったら両側も止まって、前の位置の戻る*/
+			if (A->ReferCollisionR(i) + B->ReferCollisionR(j) >= Ans) {
+				A->ChangeGear(GEAR_::STOP);
+				A->Unmove();
+				B->ChangeGear(GEAR_::STOP);
+				B->Unmove();
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Crash(ShipUniversal *A, MapObject B) {
+	for (int i = 0; i < A->ReferCCount(); i++) {
+		for (int j = 0; j < B.ReferColCount(); j++) {
+			double Ans;
+			Ans = abs(pow(A->ReferRCollisionX(i) - B.ReferColRX(j), 2)
+				+ pow(A->ReferRCollisionY(i) - B.ReferColRY(j), 2));
+			Ans = sqrt(Ans);
+			if (A->ReferCollisionR(i) + B.ReferColR(j) >= Ans) {
+				A->ChangeGear(GEAR_::STOP);
+				if (A->ReferRecognition() != 1)
+				A->ChangeDirect();
+				A->Unmove();
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*打ち込むチェック*/
+bool Crash(ShipUniversal *A, Ammo *B) {
+	if (!B->ReferUsable())
+		return false;
+
+	double RightX = B->ReferSX() > B->ReferX() ?
+		B->ReferSX() : B->ReferX();
+	double LeftX = B->ReferSX() < B->ReferX() ?
+		B->ReferSX() : B->ReferX();
+	double UpY = B->ReferSY() < B->ReferY() ?
+		B->ReferSY() : B->ReferY();
+	double BottomY = B->ReferSY() > B->ReferY() ?
+		B->ReferSY() : B->ReferY();
+
+	for (int i = 0; i < A->ReferCCount(); i++) {
+		double Ans;
+
+		/*移動後の弾は目標を越えるかどうか*/
+		if (A->ReferRCollisionX(i) >= LeftX && A->ReferRCollisionX(i)
+			<= RightX && A->ReferRCollisionY(i) >= UpY
+			&& A->ReferRCollisionY(i) <= BottomY)
+
+			Ans = (fabs((B->ReferY() - B->ReferSY())*A->ReferRCollisionX(i) 
+				+ (B->ReferSX() - B->ReferX())*A->ReferRCollisionY(i) +
+			((B->ReferX()*B->ReferSY()) - (B->ReferSX()*B->ReferY())))) /
+				(sqrt(pow(B->ReferY() - B->ReferSY(), 2) + pow(B->ReferSX()
+					- B->ReferX(), 2)));
+
+		/*普通のあたり判定*/
+		else {
+			Ans = abs(pow(B->ReferX() - A->ReferRCollisionX(i),2) +
+				pow(B->ReferY() - A->ReferRCollisionY(i),2));
+
+			Ans = sqrt(Ans);
+		}
+
+
+		if (B->ReferR() + A->ReferCollisionR(i) >= Ans) {
+			A->ChangeHP(B->ReferDamage());
+			B->ChangeUsable();
+			if (!A->ReferWait()) {
+				A->ChangeVisable();
+				return true;
+			}
+			if (!A->ReferAlive()) {
+				A->ChangeGear(GEAR_::STOP);
+				A->ChangeWait();
+			}
+			return true;
+		}
+	}
+	return false;
 }
