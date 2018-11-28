@@ -1,8 +1,10 @@
 #pragma once
-#define ALLIES_SHIP_COUNT 1
-#define ENEMIES_SHIP_COUNT 1
-#define AMMO_TYPE 1
-
+#include"DxLib.h"
+const int ALLIES_SHIP_COUNT = 2;
+const int ENEMY_SHIP_COUNT = 2;
+const int AMMO_TYPE = 2;
+const int MAP_COUNT = 2;
+const int MAP_OBJECT_TYPE = 2;
 /*このクラスは画像データを保管するクラスです*/
 class PictureData
 {
@@ -46,6 +48,25 @@ public:
 	int ReferAmmoX(int x) { return AmmoX[x]; }
 	int ReferAmmoY(int x) { return AmmoY[x]; }
 
+	/*UI*/
+	/*HPバー*/
+	int ReferHPBar() { return HPBarHandle; }
+	int ReferHPBarX() { return HPBX; }
+	int ReferHPBarY() { return HPBY; }
+
+	/*輪*/
+	int ReferSW() { return SWHandle; }
+	int ReferSWX() { return SWX; }
+	int ReferSWY() { return SWY; }
+
+	int ReferSpeedControl() { return SpeedControlHandle; }
+	int ReferSpeedControlX() { return SCMX; }
+	int ReferSpeedControlY() { return SCMY; }
+
+	/*メモリ回収*/
+	void FreeMemory();
+	void FreePicture();
+	void FREE_ALL() { FreeMemory(); FreePicture(); }
 
 private:
 	/*船データ*/
@@ -59,6 +80,13 @@ private:
 	/*サイズ*/
 	int ShipX;
 	int ShipY;
+	/****************************/
+
+	/*マップオブジェクト*/
+	int *MapObjectHandle;
+	int *MapObjectShadowHandle;
+	int *MOX;
+	int *MOY;
 	/****************************/
 
 	/*マップデータ*/
@@ -79,7 +107,7 @@ private:
 
 	/*UIデータ*/
 	/*HPバー*/
-	int *HPBarHandle;
+	int HPBarHandle;
 	int HPBX;
 	int HPBY;
 	/*輪*/

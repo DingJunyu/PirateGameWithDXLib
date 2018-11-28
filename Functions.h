@@ -6,6 +6,7 @@
 #include"UserInterface.h"
 #include"Camera.h"
 #include"MapObject.h"
+#include"PictureData.h"
 
 #include<list>
 #include<cmath>
@@ -15,5 +16,4 @@
 #include<sstream>
 #include<stdlib.h>
 
-
-ShipUniversal MakeANewShip(int *MyShipsHandle, int MSX, int MSY);
+void SingleGameMain();
