@@ -151,10 +151,13 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="GameControl.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapObject.cpp" />
+    <ClCompile Include="PictureData.cpp" />
     <ClCompile Include="ShipUniversal.cpp" />
+    <ClCompile Include="SingelGameControl.cpp" />
     <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
@@ -162,10 +165,13 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Functions.h" />
+    <ClInclude Include="GameControl.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapObject.h" />
     <ClInclude Include="MathDefine.h" />
+    <ClInclude Include="PictureData.h" />
     <ClInclude Include="ShipUniversal.h" />
+    <ClInclude Include="SingelGameControl.h" />
     <ClInclude Include="UserInterface.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>

@@ -8,7 +8,7 @@ UserInterface::~UserInterface()
 void UserInterface::Show(double Radian,int Gear){
 	unsigned int Cr = GetColor(0, 180, 100);
 	double Percent = (double)HP / (double)MAXHP;
-	DrawBox(7, 7, 293 * Percent, 23, Cr, TRUE);
+	DrawBox(10, 7, 283 * Percent+10, 23, Cr, TRUE);
 	DrawExtendGraph(0, 0, 300, 30, *HPBarBaseHandle, TRUE);
 	DrawRotaGraph3(SCREEN_X/2, SCREEN_Y+20, SWW / 2, SWL / 2,
 		0.25, 0.25, Radian, *SteeringWheelHandle, TRUE, FALSE);

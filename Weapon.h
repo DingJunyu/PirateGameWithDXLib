@@ -7,7 +7,7 @@ public:
 	Ammo(double Spe,double Rad,int Time,int MFT,const int *FHdl,
 		const int *BHdl,double NewX,double NewY,int Da) : 
 		Speed(Spe), Radian(Rad),
-		ShootTime(Time),MaxFlyTime(MFT),FlyHandle(FHdl),
+		ShootTime(Time),MaxFlyTime(rand()%50+MFT),FlyHandle(FHdl),
 		BoomHandle(BHdl),x(NewX),y(NewY),StartX(NewX),
 		StartY(NewY),Damage(Da), Usable(true),
 		FrameBeforeInvisable(10),
