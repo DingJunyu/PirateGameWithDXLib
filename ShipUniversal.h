@@ -14,7 +14,8 @@ public:
 	X座標、Y座標、ラジアン、識別番号、図のハンドル、生成時間、
 	長さ、幅*/
 	ShipUniversal(double X, double Y, double Rad, double Spe, int Rec,
-		int *ImageHandle, int *ShadowHdl, int *DesHdl, double LMT, int Lth, int Wth) :
+		int *ImageHandle, int *ShadowHdl, int *DesHdl, double LMT, int Lth,
+		int Wth) :
 		CoordX(X), CoordY(Y), Radian(Rad),
 		Speed(Spe), Recognition(Rec), ShipHandle(ImageHandle),
 		ShadowHandle(ShadowHdl), DestroyHandle(DesHdl),

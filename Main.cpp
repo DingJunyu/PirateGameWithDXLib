@@ -96,7 +96,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/*動的メモリを使う*/
 	Weapon *Alfa[WEAPON_TYPE_NUMBER];
 	for (int i = 0; i < WEAPON_TYPE_NUMBER; ++i)
-		Alfa[i] = new Weapon(500, 500, 1, 5.0, &AmmoHandle[0],
+		Alfa[i] = new Weapon(500, 2000, 1, 5.0, &AmmoHandle[0],
 			&AmmoHandle[1],1);
 	list<Ammo> AmmoOntheField;
 	list<Ammo> EnemyAmmoOntheField;
@@ -435,5 +435,51 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 }
 
 void SingleGameMain() {
+	PictureData Picture;//画像クラス宣言//メモリ確保はここでやる
+	Picture.AllInif();//画像読み込む
+	
+	/*UIを宣言し、初期化する*/
+	UserInterface UI(Picture.ReferSW(), Picture.ReferHPBar(),
+		Picture.ReferSpeedControl(), Picture.ReferSpeedControl());
 
+	/*ゲームコントローラーを宣言*/
+	SingleGameControl GameProcess;
+	GameProcess.SetACount(1);
+	GameProcess.SetBCount(20);
+
+	Camera MainCamera;
+
+	ShipUniversal MyShip(300,//初期X座標
+		200, //初期Y座標
+		0.0, //初期ラジアン
+		2.5, //速度
+		1, //識別番号
+		Picture.ReferAlliesShipHandle(0),//画像ハンドル
+		Picture.ReferAlliesShipShadowHandle(0), //shadowハンドル
+		Picture.ReferAlliesShipSinkHandle(0), //沈むハンドル
+		GetNowCount(),//生成時間-射撃用記録値を初期化
+		Picture.ReferShipX(),//画像サイズ
+		Picture.ReferShipY());//画像サイズ
+
+	Weapon Alfa(500, //range
+		2000, //クールダウン時間
+		1, //武器のタイプ
+		5.0, //弾の速度
+		Picture.ReferAmmo(0),//弾の画像データ
+		Picture.ReferAmmoAnimation(0),//弾の動画データ
+		1);//ダメージ
+
+	/*リストで弾と敵のデータを管理する*/
+	list<Ammo> AmmoOntheField;
+	list<Ammo> EnemyAmmoOntheField;
+	list<ShipUniversal> EnemyShips;
+
+	/*vectorでマップオブジェクトを管理する*/
+	vector<MapObject> MPO;
+	
+	while (1) {}
+
+	MyShip.FreeMemory();
+
+	Picture.FREE_ALL();//画像メモリ解放、動的メモリ解放
 }

@@ -7,6 +7,8 @@
 #include"Camera.h"
 #include"MapObject.h"
 #include"PictureData.h"
+#include"GameControl.h"
+#include"SingleGameControl.h"
 
 #include<list>
 #include<cmath>

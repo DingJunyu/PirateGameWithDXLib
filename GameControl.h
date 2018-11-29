@@ -1,4 +1,5 @@
 #pragma once
+#include"DxLib.h"
 class GameControl
 {
 public:
@@ -8,6 +9,8 @@ public:
 	/*’†g•ÏXŠÖ”*/
 	void SetACount(int A) { TeamACount = A; }
 	void SetBCount(int B) { TeamBCount = B; }
+
+	void SetStartTime() { StartTime = GetNowCount(); }
 
 
 	/*–â‚¢‡‚í‚¹ŠÖ”*/

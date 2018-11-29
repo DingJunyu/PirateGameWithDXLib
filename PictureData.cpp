@@ -37,7 +37,10 @@ PictureData::PictureData()
 	MapY = new int[MAP_COUNT];
 
 	/*’e*/
-	AmmoHandle = new int[AMMO_TYPE];
+	AmmoHandle = new int*[AMMO_TYPE];
+	for(int i=0;i<AMMO_TYPE;++i){
+		AmmoHandle[i] = new int[AMMO_ANIMATION];
+	}
 	AmmoX = new int[AMMO_TYPE];
 	AmmoY = new int[AMMO_TYPE];
 }
@@ -79,6 +82,9 @@ void PictureData::FreeMemory() {
 	delete[] MapY;
 
 	/*’e*/
+	for (int i = 0; i < AMMO_TYPE; ++i) {
+		delete[] AmmoHandle[i];
+	}
 	delete[] AmmoHandle;
 	delete[] AmmoX;
 	delete[] AmmoY;
@@ -102,7 +108,7 @@ void PictureData::AllInif() {
 
 	/*’e*/
 	LoadDivGraph("Image/Ammo_Base_Finish.png", 2, 2, 1
-		, 20, 20, AmmoHandle);
+		, 20, 20, AmmoHandle[0]);
 	
 	/*MAPOBJECT*/
 	MapObjectHandle[0] = LoadGraph("Image/Island_1.png");
@@ -116,6 +122,7 @@ void PictureData::AllInif() {
 	/*‰æ‘œ‚ÌƒTƒCƒY‚ð•Û‘¶*/
 	GetGraphSize(AlliesShipsHandle[0][0], &ShipX,
 		&ShipY);
+	GetGraphSize(MapObjectHandle[0], &MOX[0], &MOY[0]);
 	/******************************/
 }
 
