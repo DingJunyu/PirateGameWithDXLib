@@ -151,27 +151,33 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="FrameControl.cpp" />
     <ClCompile Include="GameControl.cpp" />
+    <ClCompile Include="GraphicControl.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainGameProgress.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapObject.cpp" />
     <ClCompile Include="PictureData.cpp" />
     <ClCompile Include="ShipUniversal.cpp" />
-    <ClCompile Include="SingelGameControl.cpp" />
+    <ClCompile Include="SingleGameControl.cpp" />
     <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="FrameControl.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="GameControl.h" />
+    <ClInclude Include="GraphicControl.h" />
+    <ClInclude Include="MainGameProgress.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapObject.h" />
     <ClInclude Include="MathDefine.h" />
     <ClInclude Include="PictureData.h" />
     <ClInclude Include="ShipUniversal.h" />
-    <ClInclude Include="SingelGameControl.h" />
+    <ClInclude Include="SingleGameControl.h" />
     <ClInclude Include="UserInterface.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>

@@ -67,8 +67,8 @@ public:
 	int ReferSpeedControlY() { return SCMY; }
 
 	int *ReferSpeedControlMark() { return &SpeedControlMarkHandle; }
-	int ReferSpeedControlX() { return SCMX; }
-	int ReferSpeedControlY() { return SCMY; }
+	int ReferSpeedControlXMark() { return SCMX; }
+	int ReferSpeedControlYMark() { return SCMY; }
 
 	/*ƒƒ‚ƒŠ‰ñû*/
 	void FreeMemory();

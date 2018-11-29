@@ -144,7 +144,7 @@ void PictureData::FreePicture() {
 
 	/*弾*/
 	for (int i = 0; i < 2; i++) {
-		DeleteGraph(AmmoHandle[i]);
+		DeleteGraph(AmmoHandle[0][i]);
 	}
 	/*マップオブジェクト*/
 	DeleteGraph(MapObjectHandle[0]);

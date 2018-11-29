@@ -8,6 +8,7 @@ using namespace DxLib;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	GraphicControl GC;
 	ChangeWindowMode(TRUE);
 	SetGraphMode(SCREEN_X, SCREEN_Y, 32);
 	// ＤＸライブラリ初期化処理
@@ -73,10 +74,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	/******************************/
 
 	/*フレームコントローラー*/
-	const int FRAMES_PER_SECOND = 60;
-	const int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
-	DWORD next_game_tick = GetTickCount();
-	int sleep_time = 10;
+	FrameControl FC;
 	/************************/
 
 	/*全体変数初期化など*/
@@ -397,12 +395,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		
 		/*スリープ処理*/
-		next_game_tick += SKIP_TICKS;
-		sleep_time = next_game_tick - GetTickCount();
-		if (sleep_time >= 0)
-		{
-			Sleep(sleep_time);
-		}
+		FC.Wait();
 		/**************/
 	}
 	/*メモリ解放*/
@@ -434,7 +427,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	return 0;            // ソフトの終了
 }
 
-void SingleGameMain() {
+void GameMain() {
+	Controller Control;//コントローラー宣言
+	MainGameProgress MainController;//ゲームコントローラー
+
+}
+
+void SingleGameMain(Controller *Control) {
 	PictureData Picture;//画像クラス宣言//メモリ確保はここでやる
 	Picture.AllInif();//画像読み込む
 	
@@ -476,10 +475,81 @@ void SingleGameMain() {
 
 	/*vectorでマップオブジェクトを管理する*/
 	vector<MapObject> MPO;
-	
-	while (1) {}
 
-	MyShip.FreeMemory();
+	/*フレームコントロール*/
+	FrameControl FC;
+	
+	while (1) {
+		/*新しい敵生成*/
+		if (true) {
+			EnemyShips.push_back(PutInAnEnemy(
+				Picture.ReferEnemyShipHandle(0),
+				Picture.ReferEnemyShipHandle(0),
+				Picture.ReferAlliesShipSinkHandle(0),
+				Picture.ReferShipX(),
+				Picture.ReferShipY(),
+				&Alfa));
+		}
+
+		switch (Control->GetOrder()) {
+		case CONTROL::LEFT:MyShip.Turn(false); break;
+		case CONTROL::RIGHT:MyShip.Turn(true); break;
+		case CONTROL::UP:if (MyShip.ReferGear() > GEAR_::FULL_SPEED)
+			MyShip.ChangeGear(MyShip.ReferGear() - 1); break;
+		case CONTROL::DOWN:if (MyShip.ReferGear() < GEAR_::BACK_UP)
+			MyShip.ChangeGear(MyShip.ReferGear() + 1); break;
+		case CONTROL::LEFT_SHOOT:
+			if (MyShip.WeaponUsable(false)) {
+				for (int i = 0; i < MyShip.ReferWeaponOnLeft(); ++i) {
+					AmmoOntheField.push_back(MyShip.Shoot(false, i));
+				}
+			}
+			break;
+		case CONTROL::RIGHT_SHOOT:
+			if (MyShip.WeaponUsable(true)) {
+				for (int i = 0; i < MyShip.ReferWeaponOnRight(); ++i) {
+					AmmoOntheField.push_back(MyShip.Shoot(true, i));
+				}
+			}
+			break;
+		case CONTROL::ALL_SHOOT:
+			if (MyShip.WeaponUsable(true)) {
+				for (int i = 0; i < MyShip.ReferWeaponOnRight(); ++i) {
+					AmmoOntheField.push_back(MyShip.Shoot(true, i));
+				}
+			}
+			if (MyShip.WeaponUsable(false)) {
+				for (int i = 0; i < MyShip.ReferWeaponOnLeft(); ++i) {
+					AmmoOntheField.push_back(MyShip.Shoot(false, i));
+				}
+			}
+			break;
+		}
+
+		/*フレーム部分*/
+		FC.Wait();
+	}
+
+	MyShip.FreeMemory();//自機のメモリ解放
 
 	Picture.FREE_ALL();//画像メモリ解放、動的メモリ解放
+}
+
+ShipUniversal PutInAnEnemy(int *ESH, int *ESShadowH,
+	int *ESSinkH, int ShipX, int ShipY, Weapon *Alfa) {
+
+	double X, Y;//X座標、Y座標
+	X = rand() % (BOARDER_X)-60 + 60;
+	Y = rand() % (BOARDER_Y)-60 + 60;
+	double R;//ラジアン
+	R = (((double)((rand() % 16 + 1)) / 16)) * PI;
+
+	ShipUniversal Ship(X, Y, R, 1.4, 2, ESH,
+		ESShadowH, ESSinkH,
+		0, ShipX, ShipY);
+
+	Ship.TESTFUNCTION();
+	Ship.LoadWeapon(Alfa);
+
+	return Ship;
 }

@@ -1,12 +1,5 @@
 #include "MainGameProgress.h"
 
-
-
-MainGameProgress::MainGameProgress()
-{
-}
-
-
 MainGameProgress::~MainGameProgress()
 {
 }
