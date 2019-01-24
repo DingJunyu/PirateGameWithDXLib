@@ -131,6 +131,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		GetHitKeyStateAll(KeyBuf);
 		/*船　　テ　　ス　　ト*/
+		/*適度に敵をマップに配置する*/
 		if ((rand() % 100 < RP) && (Counter < MaxCount)) {
 			double X, Y;
 			X = rand() % (BOARDER_X) - 60 + 60;
@@ -528,6 +529,10 @@ void SingleGameMain(Controller *Control) {
 
 		/*フレーム部分*/
 		FC.Wait();
+	}
+
+	for (auto itr = MPO.begin(); itr != MPO.end(); itr++) {
+		itr->FreeMemory();
 	}
 
 	MyShip.FreeMemory();//自機のメモリ解放

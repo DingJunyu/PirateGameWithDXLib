@@ -22,4 +22,3 @@ private:
 	bool Setting;
 	bool Help;
 };
-

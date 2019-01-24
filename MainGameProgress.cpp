@@ -5,7 +5,7 @@ MainGameProgress::~MainGameProgress()
 }
 
 void MainGameProgress::ErrorCheck() {
-	int Count;
+	int Count = 0;
 	if (Title)Count++;
 	if (GameOver)Count++;
 	if (SingleGameProcessing)Count++;

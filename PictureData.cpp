@@ -29,7 +29,7 @@ PictureData::PictureData()
 	MapObjectHandle = new int[MAP_OBJECT_TYPE];
 	MapObjectShadowHandle = new int[MAP_OBJECT_TYPE];
 	MOX = new int[MAP_OBJECT_TYPE];
-	MOY = new int[MAP_OBJECT_TYPE];
+	MOY = new int[MAP_OBJECT_TYPE];	
 
 	/*ƒ}ƒbƒv*/
 	MapHandle = new int[MAP_COUNT];
